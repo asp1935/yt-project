@@ -1,7 +1,23 @@
 import {Router} from 'express';
 import { registerUser } from '../controllers/user.controller.js';
+import {upload} from '../middleware/multer.middleware.js';
 
-const router=Router()
-router.route("/register").post(registerUser)       //url will be===http://localhost:3000/api/v1/users/register
+const router=Router();
+router.route("/register").post(
+    //middleware is used to store files on server folder 
+    // field method for multiple files 
+    upload.fields([ 
+        {
+            name: "avatar",   //name from frontend 
+            maxCount: 1       // no of image (we can give array of images )
+        },
+        {
+            name: "coverImage",
+            maxCount: 1
+        }
+    ]),
+    
+    registerUser
+)       //url will be===http://localhost:3000/api/v1/users/register
 
 export default router;

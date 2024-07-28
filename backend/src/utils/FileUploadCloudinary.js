@@ -1,5 +1,5 @@
 import {v2 as cloudinary} from 'cloudinary';
-import fs from fs    //file system package available in node already
+import fs from 'fs'    //file system package available in node already
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -18,7 +18,7 @@ const uploadOnCloudinary= async(localFilePath) => {
         //file uploaded successfully
         console.log('File is uploded on cloudinary',responce.url);
         //remove locally stored file from our  server
-        fs.unlinkSync(localFilePath)
+         fs.unlinkSync(localFilePath)
         return responce;
 
     } catch (error) {

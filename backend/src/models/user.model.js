@@ -32,8 +32,9 @@ const userSchema=new Schema({
         type:String,    //cloudnary URL
         required:true,
     },
-    coberImage:{
+    coverImage:{
         type:String,      //cloudnary URL
+        
     },
     watchHistory:[
         {
@@ -78,7 +79,8 @@ userSchema.methods.isPasswordCorrect=async function(password){
 // jwt token are bearer token like anyone have that token can get data 
 
 //sign method is for creating token
-
+//access tokens are short lived
+//access token are used for authentication in application for features in app
 userSchema.methods.genrateAccessToken=function(){
     return jwt.sign(
         {
@@ -93,6 +95,10 @@ userSchema.methods.genrateAccessToken=function(){
         }
     )
 }
+//refresh toekn are long lived
+//in access token if expiry is only 15 min then after 15min user has to login again that time refresh token comes in 
+//refresh token is store on db as well as client side using this token user does not have to enter password again 
+//hit endpint to server if client refreshtoken and sever refresh token is same then server give new accesstoken to user amdavli karun gheychi 
 
 userSchema.methods.genrateRefreshToken=function(){
     return jwt.sign(
@@ -105,4 +111,7 @@ userSchema.methods.genrateRefreshToken=function(){
         }
     )
 }
-export const User=mongoose.model("User",userSchema)
+export const User=mongoose.model("User",userSchema);
+
+//Usre varibale directaly communicate with database
+// in model method User is given mongodb conver it into pural form like users 

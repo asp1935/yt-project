@@ -10,7 +10,7 @@ import { app } from './app.js';
 // --experimental-json-module: Enables experimental support for importing JSON modules.
 
 
-dotenv.config({path: './env'})
+dotenv.config({path: './.env'})
 
 app.on("error",()=>{
     console.log('Application not able to talk to DB',error);
