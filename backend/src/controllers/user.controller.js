@@ -122,7 +122,7 @@ const registerUser = asyncHandler(async (req, res) => {
         new APIResponce(200, createdUser, "User Registered Successfully")
     )
 
-})
+});
 
 const loginUser = asyncHandler(async (req, res) => {
     /*
@@ -196,7 +196,7 @@ const loginUser = asyncHandler(async (req, res) => {
                 "User Logged In Successfully..."
             )
         )
-})
+});
 
 const logoutUser = asyncHandler(async (req, res) => {
     //req.user our object add from auth.middleware
@@ -226,7 +226,7 @@ const logoutUser = asyncHandler(async (req, res) => {
         .clearCookie('accessToken', options)
         .clearCookie('refreshToken', options)
         .json(new APIResponce(200, {}, "User  Logged Out Successfully!!!"))
-})
+});
 
 //this controller for taking new accesstoken from server 
 //accesstoken expiry is limited thats why if user is active at that time accesstoken expiried then that automatically 
@@ -270,11 +270,140 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     } catch (error) {
         throw new APIError(401, error?.message || 'Invalid Refresh Token')
     }
+});
+
+
+const changeCurrectPassword = asyncHandler(async(req,res)=>{
+
+    //user logged in or not checked by middleware
+
+    const {oldPassword,newPassword}=req.body;
+    
+    /*const {oldPassword,newPassword,confPassword}=req.body;
+    if(newPassword!==confPassword){
+        throw new APIError(400,'New Password and Confirm Password  not Match')
+    }*/
+
+    //loggedin user from request.user from middleware set new object current user
+    const user= await User.findById(req.user?._id);
+
+    // check password oldpass is correct or not using predefined method in user.model
+    const isPasswordCorrect=await user.isPasswordCorrect(oldPassword);
+
+    if(!isPasswordCorrect){
+        throw new APIError(400,'Invalid ')
+    }
+
+    //set new password
+    
+    
+    user.password=newPassword
+    //this line execute then in user.model file pre method trigger 
+    await user.save({validateBeforeSave:false})
+
+    return res
+        .status(200)
+        .json(new APIResponce(200,"Password Change Succesfully..."))
+
+});
+
+const getCurrectUser = asyncHandler(async(req,req)=>{
+    return res
+        .status(200)
+        .json(200,req.user,"Currunt User Fetch Successfully...")
+});
+
+//in this controller only updating text data because in produiction level new controller is created  for file data update like image for low congestion
+//this controller require auth middlware
+const updateAccountDetails = asyncHandler(async(req,res)=>{
+    const {fullName, email } = req.body;
+
+    if(!fullName || !email){
+        throw new APIError('400',"All field are required!!!")
+    }
+
+    const user= await User.findByIdAndUpdate(req.user?._id,
+        {
+            $set:{
+                //both are same es6
+                fullName:fullName,
+                email
+            }
+        },
+        {new:true}
+    ).select('-password -refreshToken')
+
+    return res
+        .status(200)
+        .json(new APIResponce(200,user,"Account Details Updated Successfully..."))
+});
+
+
+//for this controller two middleware req auth for current user login and multer for upload new file
+const updateUserAvatar = asyncHandler(async(req,res)=>{
+    //req.file this object available from middlware
+    const newAvatarLocalPath=req.file?.path;
+
+
+    if(!newAvatarLocalPath){
+        throw new APIError(400,'Avatar file is Missing!!!')
+    }
+    const avatarUrl= await uploadOnCloudinary(newAvatarLocalPath);
+    if(!avatarUrl.url){
+        throw new APIError(500,'Error While Uploding Avatar!!!')
+    }
+
+    const user = await User.findByIdAndUpdate(req.user?._id,
+        {
+            $set:{
+                avatar:avatarUrl.url
+            }
+        },
+        {new:true}
+    ).select('-password -refreshToken')
+
+    return res
+        .status(200)
+        .json(200,user,'Avatar Image Updated Successfully...')
 })
+
+const updateUserCoverImage = asyncHandler(async(req,res)=>{
+    //req.file this object available from middlware
+    const newCoverImageLocalPath=req.file?.path;
+
+
+    if(!newCoverImageLocalPath){
+        throw new APIError(400,'Cover Image File is Missing!!!')
+    }
+    const coverImageUrl= await uploadOnCloudinary(newCoverImageLocalPath);
+    if(!coverImageUrl.url){
+        throw new APIError(500,'Error While Uploding Cover Image!!!')
+    }
+
+    const user = await User.findByIdAndUpdate(req.user?._id,
+        {
+            $set:{
+                coverImage:coverImageUrl.url
+            }
+        },
+        {new:true}
+    ).select('-password -refreshToken')
+
+    return res
+        .status(200)
+        .json(200,user,'Cover Image Updated Successfully...')
+})
+
 
 export {
     registerUser,
     loginUser,
     logoutUser,
     refreshAccessToken,
+    changeCurrectPassword,
+    getCurrectUser,
+    updateAccountDetails,
+    updateUserAvatar,
+    updateUserCoverImage,
+
 };
