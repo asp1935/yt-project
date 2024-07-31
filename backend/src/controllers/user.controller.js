@@ -22,6 +22,7 @@ const genrateAccessAndRefreshToken = async (userId) => {
         //save method update db and validateBeforeSave:false is given because we are updating only single value thats why it calls mongoose moduls like require like 
         //so we give validateBeforeSave:false it save/update  data without validation  
         await user.save({ validateBeforeSave: false })
+        // console.log(refreshToken,accessToken);
         return { refreshToken, accessToken }
 
     } catch (error) {
@@ -259,13 +260,13 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
             secure: true,
         }
 
-        const { newRefreshToken, newAccessToken } = await genrateAccessAndRefreshToken(user._id);
-
+        const { refreshToken, accessToken } = await genrateAccessAndRefreshToken(user._id);
+        console.log(refreshToken,accessToken);
         return res
             .status(200)
-            .cookie('accessToken', newRefreshToken)
-            .cookie('refreshToken', newAccessToken)
-            .json(new APIResponce(200, { newAccessToken, newRefreshToken }, 'Access Token Refreshed...'))
+            .cookie('accessToken', accessToken,options)
+            .cookie('refreshToken', refreshToken,options)
+            .json(new APIResponce(200, { accessToken, refreshToken }, 'Access Token Refreshed...'))
 
     } catch (error) {
         throw new APIError(401, error?.message || 'Invalid Refresh Token')
@@ -283,7 +284,7 @@ const changeCurrectPassword = asyncHandler(async(req,res)=>{
     if(newPassword!==confPassword){
         throw new APIError(400,'New Password and Confirm Password  not Match')
     }*/
-
+    // console.log(oldPassword,newPassword);
     //loggedin user from request.user from middleware set new object current user
     const user= await User.findById(req.user?._id);
 
@@ -307,10 +308,10 @@ const changeCurrectPassword = asyncHandler(async(req,res)=>{
 
 });
 
-const getCurrectUser = asyncHandler(async(req,req)=>{
+const getCurrectUser = asyncHandler(async(req,res)=>{
     return res
         .status(200)
-        .json(200,req.user,"Currunt User Fetch Successfully...")
+        .json(new APIResponce(200,req.user,"Currunt User Fetch Successfully..."))
 });
 
 //in this controller only updating text data because in produiction level new controller is created  for file data update like image for low congestion
@@ -364,7 +365,7 @@ const updateUserAvatar = asyncHandler(async(req,res)=>{
 
     return res
         .status(200)
-        .json(200,user,'Avatar Image Updated Successfully...')
+        .json(new APIResponce(200,user,'Avatar Image Updated Successfully...'))
 })
 
 const updateUserCoverImage = asyncHandler(async(req,res)=>{
@@ -391,7 +392,7 @@ const updateUserCoverImage = asyncHandler(async(req,res)=>{
 
     return res
         .status(200)
-        .json(200,user,'Cover Image Updated Successfully...')
+        .json(new APIResponce(200,user,'Cover Image Updated Successfully...'))
 })
 
 
