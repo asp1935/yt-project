@@ -4,6 +4,7 @@ import { User } from '../models/user.model.js';
 import uploadOnCloudinary from '../utils/FileUploadCloudinary.js';
 import { APIResponce } from '../utils/APIResponce.js';
 import jwt from 'jsonwebtoken';
+import deletefromCloudinary from '../utils/DeleteFileCloudinary.js';
 
 //this method for genrating refresh token and access token
 
@@ -353,7 +354,7 @@ const updateUserAvatar = asyncHandler(async(req,res)=>{
     if(!avatarUrl.url){
         throw new APIError(500,'Error While Uploding Avatar!!!')
     }
-
+    const oldAvatarUrl=req.user?.avatar;
     const user = await User.findByIdAndUpdate(req.user?._id,
         {
             $set:{
@@ -362,7 +363,8 @@ const updateUserAvatar = asyncHandler(async(req,res)=>{
         },
         {new:true}
     ).select('-password -refreshToken')
-
+    
+    await deletefromCloudinary(oldAvatarUrl)
     return res
         .status(200)
         .json(new APIResponce(200,user,'Avatar Image Updated Successfully...'))
