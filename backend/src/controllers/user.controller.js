@@ -5,6 +5,7 @@ import uploadOnCloudinary from '../utils/FileUploadCloudinary.js';
 import { APIResponce } from '../utils/APIResponce.js';
 import jwt from 'jsonwebtoken';
 import deletefromCloudinary from '../utils/DeleteFileCloudinary.js';
+import mongoose from 'mongoose';
 
 //this method for genrating refresh token and access token
 
@@ -262,11 +263,11 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         }
 
         const { refreshToken, accessToken } = await genrateAccessAndRefreshToken(user._id);
-        console.log(refreshToken,accessToken);
+        console.log(refreshToken, accessToken);
         return res
             .status(200)
-            .cookie('accessToken', accessToken,options)
-            .cookie('refreshToken', refreshToken,options)
+            .cookie('accessToken', accessToken, options)
+            .cookie('refreshToken', refreshToken, options)
             .json(new APIResponce(200, { accessToken, refreshToken }, 'Access Token Refreshed...'))
 
     } catch (error) {
@@ -275,128 +276,265 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 
-const changeCurrectPassword = asyncHandler(async(req,res)=>{
+const changeCurrectPassword = asyncHandler(async (req, res) => {
 
     //user logged in or not checked by middleware
 
-    const {oldPassword,newPassword}=req.body;
-    
+    const { oldPassword, newPassword } = req.body;
+
     /*const {oldPassword,newPassword,confPassword}=req.body;
     if(newPassword!==confPassword){
         throw new APIError(400,'New Password and Confirm Password  not Match')
     }*/
     // console.log(oldPassword,newPassword);
     //loggedin user from request.user from middleware set new object current user
-    const user= await User.findById(req.user?._id);
+    const user = await User.findById(req.user?._id);
 
     // check password oldpass is correct or not using predefined method in user.model
-    const isPasswordCorrect=await user.isPasswordCorrect(oldPassword);
+    const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
 
-    if(!isPasswordCorrect){
-        throw new APIError(400,'Invalid ')
+    if (!isPasswordCorrect) {
+        throw new APIError(400, 'Invalid ')
     }
 
     //set new password
-    
-    
-    user.password=newPassword
+
+
+    user.password = newPassword
     //this line execute then in user.model file pre method trigger 
-    await user.save({validateBeforeSave:false})
+    await user.save({ validateBeforeSave: false })
 
     return res
         .status(200)
-        .json(new APIResponce(200,"Password Change Succesfully..."))
+        .json(new APIResponce(200, "Password Change Succesfully..."))
 
 });
 
-const getCurrectUser = asyncHandler(async(req,res)=>{
+const getCurrectUser = asyncHandler(async (req, res) => {
     return res
         .status(200)
-        .json(new APIResponce(200,req.user,"Currunt User Fetch Successfully..."))
+        .json(new APIResponce(200, req.user, "Currunt User Fetch Successfully..."))
 });
 
 //in this controller only updating text data because in produiction level new controller is created  for file data update like image for low congestion
 //this controller require auth middlware
-const updateAccountDetails = asyncHandler(async(req,res)=>{
-    const {fullName, email } = req.body;
+const updateAccountDetails = asyncHandler(async (req, res) => {
+    const { fullName, email } = req.body;
 
-    if(!fullName || !email){
-        throw new APIError('400',"All field are required!!!")
+    if (!fullName || !email) {
+        throw new APIError('400', "All field are required!!!")
     }
 
-    const user= await User.findByIdAndUpdate(req.user?._id,
+    const user = await User.findByIdAndUpdate(req.user?._id,
         {
-            $set:{
+            $set: {
                 //both are same es6
-                fullName:fullName,
+                fullName: fullName,
                 email
             }
         },
-        {new:true}
+        { new: true }
     ).select('-password -refreshToken')
 
     return res
         .status(200)
-        .json(new APIResponce(200,user,"Account Details Updated Successfully..."))
+        .json(new APIResponce(200, user, "Account Details Updated Successfully..."))
 });
 
 
 //for this controller two middleware req auth for current user login and multer for upload new file
-const updateUserAvatar = asyncHandler(async(req,res)=>{
+const updateUserAvatar = asyncHandler(async (req, res) => {
     //req.file this object available from middlware
-    const newAvatarLocalPath=req.file?.path;
+    const newAvatarLocalPath = req.file?.path;
 
 
-    if(!newAvatarLocalPath){
-        throw new APIError(400,'Avatar file is Missing!!!')
+    if (!newAvatarLocalPath) {
+        throw new APIError(400, 'Avatar file is Missing!!!')
     }
-    const avatarUrl= await uploadOnCloudinary(newAvatarLocalPath);
-    if(!avatarUrl.url){
-        throw new APIError(500,'Error While Uploding Avatar!!!')
+    const avatarUrl = await uploadOnCloudinary(newAvatarLocalPath);
+    if (!avatarUrl.url) {
+        throw new APIError(500, 'Error While Uploding Avatar!!!')
     }
-    const oldAvatarUrl=req.user?.avatar;
+    const oldAvatarUrl = req.user?.avatar;
     const user = await User.findByIdAndUpdate(req.user?._id,
         {
-            $set:{
-                avatar:avatarUrl.url
+            $set: {
+                avatar: avatarUrl.url
             }
         },
-        {new:true}
+        { new: true }
     ).select('-password -refreshToken')
-    
+
     await deletefromCloudinary(oldAvatarUrl)
     return res
         .status(200)
-        .json(new APIResponce(200,user,'Avatar Image Updated Successfully...'))
+        .json(new APIResponce(200, user, 'Avatar Image Updated Successfully...'))
 })
 
-const updateUserCoverImage = asyncHandler(async(req,res)=>{
+const updateUserCoverImage = asyncHandler(async (req, res) => {
     //req.file this object available from middlware
-    const newCoverImageLocalPath=req.file?.path;
+    const newCoverImageLocalPath = req.file?.path;
 
 
-    if(!newCoverImageLocalPath){
-        throw new APIError(400,'Cover Image File is Missing!!!')
+    if (!newCoverImageLocalPath) {
+        throw new APIError(400, 'Cover Image File is Missing!!!')
     }
-    const coverImageUrl= await uploadOnCloudinary(newCoverImageLocalPath);
-    if(!coverImageUrl.url){
-        throw new APIError(500,'Error While Uploding Cover Image!!!')
+    const coverImageUrl = await uploadOnCloudinary(newCoverImageLocalPath);
+    if (!coverImageUrl.url) {
+        throw new APIError(500, 'Error While Uploding Cover Image!!!')
     }
 
     const user = await User.findByIdAndUpdate(req.user?._id,
         {
-            $set:{
-                coverImage:coverImageUrl.url
+            $set: {
+                coverImage: coverImageUrl.url
             }
         },
-        {new:true}
+        { new: true }
     ).select('-password -refreshToken')
 
     return res
         .status(200)
-        .json(new APIResponce(200,user,'Cover Image Updated Successfully...'))
+        .json(new APIResponce(200, user, 'Cover Image Updated Successfully...'))
 })
 
+const getUserchannelProfile = asyncHandler(async (req, res) => {
+    const { username } = req.params;
+    if (!username?.trim()) {
+        throw new APIError(400, 'User name Missing')
+    }
+
+    //aggrigartion pipline is used
+    const channel = await User.aggregate([
+        //1st pipline
+        {
+            //find channel 
+            $match: {
+                username: username?.toLowerCase()
+            }
+        },
+        {   //2nd pipline count subscribrs using channel
+            $lookup: {
+                from: 'subscriptions',
+                localField: "_id",           //user collection id 
+                foreignField: "channel",     //subscription collection id
+                as: 'subscribers'            //new name given to document 
+
+            }
+        },
+        {   //3rd pipeline for find how many channel subscribed by  current channel/user
+            $lookup: {
+                from: 'subscriptions',
+                localField: "_id",
+                foreignField: "subscriber",
+                as: 'subscribeTo'
+            }
+        },
+        {   
+            // 3rd pipline
+            //this operator save old field values but also add new values/fields (sbuscriberCount,channelSubscribeToCount)
+            $addFields: {
+                subscriberCount: {
+                    $size: "$subscribers"     //szie for countng 
+                },
+                channelSubscribedToCount: {
+                    $size: "$subscribeTo"
+                },
+                //this is for to if already subscribed or not 
+                isSubscribed: {
+                    //if condition check user(id) is present in subcsibers.subscriber filed
+                    //$_in work in object as welll as arrays
+                    if: { $in: [req.user?._id, "$subscribers.subscriber"] },
+                    then: ture,
+                    else: false
+                }
+
+            }
+        },
+        {
+            //project is used to project values but only selected values not all 
+            $project:{
+                fullName: 1,
+                username: 1,
+                subscriberCount: 1,
+                channelSubscribedToCount:1,
+                isSubscribed:1,
+                avatar:1,
+                coverImage:1,
+                email:1,
+
+            }
+        }
+    ])
+
+    console.log(channel);
+
+    if(!channel?.length){
+        throw new APIError(404,'Channel Does not Exists!!!');
+    }
+
+    return res 
+        .status(200)
+        .json(new APIResponce(200,channel[0],'User Channel Fetched Successfully...'))
+
+})
+
+
+const getWatchHistory=asyncHandler(async(req,res)=>{
+
+    //flow of this aggregation users=>watchhistory=>video document find=>but there are many docs
+    const user=await User.aggregate([
+        {
+            $match:{
+                // _id: req.user?._id this line not work here because mongoose not work here 
+                //req.user?.id give only string mongoose handle that string in backend and to find mongodb id
+                _id: new mongoose.Types.ObjectId(req.user?._id)
+            }
+        },
+        {
+            $lookup:{
+                from:'videos',
+                localField:'watchHistory',
+                foreignField:'_id',
+                as:'watchHistory',
+                //below is a nested pipeline 
+                pipeline:[
+                    //this pipline give owner field but it give array and we need first value
+                    {
+                        $lookup:{
+                            from:'users',
+                            localField:'videoOwner',
+                            foreignField:"_id",
+                            as:'videoOwner',
+                            pipeline:[
+                                {
+                                    $project:{
+                                        fullName:1,
+                                        username:1,
+                                        avatar:1,
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        //this pipline for extract first value from array using addfields we create new filed 
+                        //fisrt give fisrt value from given field(its array)
+                        $addFields:{
+                            videoOwner:{
+                                $first: $videoOwner
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    ]);
+
+    return res
+        .status(200)
+        .json(new APIResponce(200,user[0].watchHistory,'Watch History Fetch Successfully...'))
+})
 
 export {
     registerUser,
@@ -408,5 +546,6 @@ export {
     updateAccountDetails,
     updateUserAvatar,
     updateUserCoverImage,
-
+    getUserchannelProfile,
+    getWatchHistory,
 };
