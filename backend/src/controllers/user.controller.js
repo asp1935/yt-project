@@ -208,8 +208,14 @@ const logoutUser = asyncHandler(async (req, res) => {
         req.user._id,
         {
             //$_set is a mongodb opertor - give object to update values in db 
-            $set: {
+            // but in some cases undifined give error
+            /*$set: {
                 refreshToken: undefined
+            }*/
+
+            //so unsetmethod is here for remove refreshToken filed
+            $unset: {
+                refreshToken: 1,   //this remove the field from document
             }
 
         },
@@ -430,7 +436,7 @@ const getUserchannelProfile = asyncHandler(async (req, res) => {
                 as: 'subscribeTo'
             }
         },
-        {   
+        {
             // 3rd pipline
             //this operator save old field values but also add new values/fields (sbuscriberCount,channelSubscribeToCount)
             $addFields: {
@@ -444,24 +450,25 @@ const getUserchannelProfile = asyncHandler(async (req, res) => {
                 isSubscribed: {
                     //if condition check user(id) is present in subcsibers.subscriber filed
                     //$_in work in object as welll as arrays
-                    if: { $in: [req.user?._id, "$subscribers.subscriber"] },
-                    then: ture,
-                    else: false
+                    $cond: {
+                        if: { $in: [req.user?._id, "$subscribers.subscriber"] },
+                        then: true,
+                        else: false
+                    }
                 }
-
             }
         },
         {
             //project is used to project values but only selected values not all 
-            $project:{
+            $project: {
                 fullName: 1,
                 username: 1,
                 subscriberCount: 1,
-                channelSubscribedToCount:1,
-                isSubscribed:1,
-                avatar:1,
-                coverImage:1,
-                email:1,
+                channelSubscribedToCount: 1,
+                isSubscribed: 1,
+                avatar: 1,
+                coverImage: 1,
+                email: 1,
 
             }
         }
@@ -469,49 +476,49 @@ const getUserchannelProfile = asyncHandler(async (req, res) => {
 
     console.log(channel);
 
-    if(!channel?.length){
-        throw new APIError(404,'Channel Does not Exists!!!');
+    if (!channel?.length) {
+        throw new APIError(404, 'Channel Does not Exists!!!');
     }
 
-    return res 
+    return res
         .status(200)
-        .json(new APIResponce(200,channel[0],'User Channel Fetched Successfully...'))
+        .json(new APIResponce(200, channel[0], 'User Channel Fetched Successfully...'))
 
 })
 
 
-const getWatchHistory=asyncHandler(async(req,res)=>{
+const getWatchHistory = asyncHandler(async (req, res) => {
 
-    //flow of this aggregation users=>watchhistory=>video document find=>but there are many docs
-    const user=await User.aggregate([
+    //flow of this aggregation users=>watchhistory=>video document=>find user document from video collection=>
+    const user = await User.aggregate([
         {
-            $match:{
+            $match: {
                 // _id: req.user?._id this line not work here because mongoose not work here 
                 //req.user?.id give only string mongoose handle that string in backend and to find mongodb id
                 _id: new mongoose.Types.ObjectId(req.user?._id)
             }
         },
         {
-            $lookup:{
-                from:'videos',
-                localField:'watchHistory',
-                foreignField:'_id',
-                as:'watchHistory',
+            $lookup: {
+                from: 'videos',
+                localField: 'watchHistory',
+                foreignField: '_id',
+                as: 'watchHistory',
                 //below is a nested pipeline 
-                pipeline:[
+                pipeline: [
                     //this pipline give owner field but it give array and we need first value
                     {
-                        $lookup:{
-                            from:'users',
-                            localField:'videoOwner',
-                            foreignField:"_id",
-                            as:'videoOwner',
-                            pipeline:[
+                        $lookup: {
+                            from: 'users',
+                            localField: 'videoOwner',
+                            foreignField: "_id",
+                            as: 'videoOwner',
+                            pipeline: [
                                 {
-                                    $project:{
-                                        fullName:1,
-                                        username:1,
-                                        avatar:1,
+                                    $project: {
+                                        fullName: 1,
+                                        username: 1,
+                                        avatar: 1,
                                     }
                                 }
                             ]
@@ -520,9 +527,9 @@ const getWatchHistory=asyncHandler(async(req,res)=>{
                     {
                         //this pipline for extract first value from array using addfields we create new filed 
                         //fisrt give fisrt value from given field(its array)
-                        $addFields:{
-                            videoOwner:{
-                                $first: $videoOwner
+                        $addFields: {
+                            videoOwner: {
+                                $first: "$videoOwner"
                             }
                         }
                     }
@@ -533,7 +540,7 @@ const getWatchHistory=asyncHandler(async(req,res)=>{
 
     return res
         .status(200)
-        .json(new APIResponce(200,user[0].watchHistory,'Watch History Fetch Successfully...'))
+        .json(new APIResponce(200, user[0].watchHistory, 'Watch History Fetch Successfully...'))
 })
 
 export {

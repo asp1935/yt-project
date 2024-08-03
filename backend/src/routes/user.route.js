@@ -33,8 +33,8 @@ router.route("/current-user").get(verifyJWT,getCurrectUser);
 router.route("/update-account-details").patch(verifyJWT,updateAccountDetails);
 router.route("/update-avatar").patch(verifyJWT,upload.single('avatar'),updateUserAvatar);
 router.route("/update-cover-image").patch(verifyJWT,upload.single('coverImage'),updateUserCoverImage);
-
-router.route("/c/:username").get(verifyJWT,getUserchannelProfile)l
+//we are taking usernme from params thats why :username
+router.route("/channel/:username").get(verifyJWT,getUserchannelProfile);
 router.route("/history").get(verifyJWT,getWatchHistory);
 
 export default router;
