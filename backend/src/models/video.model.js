@@ -44,7 +44,7 @@ const videoSchema=new Schema(
         timestamps:true
     }
 );
-//
+//we cant give all videos at a time as per user scroll or next page load new videos for pagination we use this
 videoSchema.plugin(mongooseAggregatePaginate);
 
 export const Video=mongoose.model('Video',videoSchema )
