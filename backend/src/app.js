@@ -31,7 +31,7 @@ app.use(cookieParser())
 //route Import
 
 import userRouter from './routes/user.route.js'
-
+import tweetRouter from './routes/tweet.route.js'
 
 
 //route Declaration
@@ -39,6 +39,6 @@ import userRouter from './routes/user.route.js'
 //api/v1/ is used for standard practice
 
 app.use("/api/v1/users",userRouter )             //url will be===http://localhost:3000/api/v1/users
-
+app.use("/api/v1/tweet",tweetRouter)
 
 export {app}
