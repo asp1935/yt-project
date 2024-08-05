@@ -139,7 +139,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
     // 1.get credientails
     const { email, username, password } = req.body
-    console.log(email);
+    // console.log(email);
     // 2.validate credientails (email-username)
 
     // for compasory email & usename

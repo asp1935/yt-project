@@ -22,7 +22,7 @@ const createTweet = asyncHandler(async (req, res) => {
     if (!createdTweet) {
         throw new APIError(500, 'Something wend wrong while posting tweet!!!')
     }
-    console.log(createdTweet);
+    // console.log(createdTweet);
 
     return res
         .status(200)
@@ -30,70 +30,167 @@ const createTweet = asyncHandler(async (req, res) => {
 
 });
 
-const getUserTweet = asyncHandler(async(req,res)=>{
-    const tweets=await Tweet.aggregate([
+const getUserTweet = asyncHandler(async (req, res) => {
+    const tweets = await Tweet.aggregate([
         {
-            $match:{
-                tweetOwner:new mongoose.Types.ObjectId(req.user?._id)
+            $match: {
+                tweetOwner: new mongoose.Types.ObjectId(req.user?._id)
             }
         },
         {
-            $lookup:{
-                from:'users',
-                localField:'tweetOwner',
-                foreignField:'_id',
-                as:'tweetOwner',
-                pipeline:[
+            $lookup: {
+                from: 'users',
+                localField: 'tweetOwner',
+                foreignField: '_id',
+                as: 'tweetOwner',
+                pipeline: [
                     {
-                        $project:{
-                            fullName:1,
-                            username:1,
-                            avatar:1
+                        $project: {
+                            fullName: 1,
+                            username: 1,
+                            avatar: 1
                         }
                     }
                 ]
             }
         },
         {
-            $addFields:{
-                tweetOwner:{$first:"$tweetOwner"}
+            $lookup:{
+                from:'likes',
+                localField:'_id',
+                foreignField:'tweet',
+                as:'likeDetails',
+                pipeline:[
+                    {
+                        $project:{
+                            likeBy:1
+                        }
+                    }
+                ]
             }
         },
         {
-            $addFields:{
-                fullName:"$tweetOwner.fullName",
-                username:"$tweetOwner.username",
-                avatar:"$tweetOwner.avatar"
+            $addFields: {
+                tweetOwner: { $first: "$tweetOwner" },
+                likeCount:{
+                    $size:'$likeDetails',
+                },
+                isLiked:{
+                    $cond:{
+                        if:{
+                            $in:[req.user?._id,"$likeDetails.likeBy"]
+                        },
+                        then:true,
+                        else:false
+                    }
+                }
+            }
+
+        },
+        {
+            $addFields: {
+                fullName: "$tweetOwner.fullName",
+                username: "$tweetOwner.username",
+                avatar: "$tweetOwner.avatar"
             }
         },
         {
-            $project:{
-                _id:1,
-                fullName:1,
-                username:1,
-                content:1,
-                avatar:1,
-                createdAt:1
+            $project: {
+                _id: 1,
+                fullName: 1,
+                username: 1,
+                content: 1,
+                avatar: 1,
+                likeCount:1,
+                isLiked:1,
+                createdAt: 1
 
             }
         }
     ]);
-    if(!tweets){
-        throw new APIError(500,'Something went wrong while fetching ')
+    if (!tweets) {
+        throw new APIError(500, 'Something went wrong while fetching ')
     }
 
     // console.log(tweets);
     return res
         .status(200)
-        .json(new APIResponce(200,tweets,'User Tweets'))
+        .json(new APIResponce(200, tweets, 'User Tweets'))
 });
 
+const deleteTweet = asyncHandler(async (req, res) => {
+    const { tweetId } = req.params;
+    // console.log(tweetId);
+    if (!tweetId?.trim()) {
+        throw new APIError(400, 'Tweet Id Missing')
+    }
 
+    if (!isValidObjectId(tweetId)) {
+        throw new APIError(400, 'Invalid Tweet Selected!!!')
+    }
+
+    const tweet = await Tweet.findById(tweetId);
+    if (!tweet) {
+        throw new APIError(404, 'Tweet Not Found');
+    }
+
+    if (tweet?.tweetOwner.toString() !== req.user?._id.toString()) {
+        throw new APIError('401', 'Unauthorized Access!!!')
+    }
+    console.log("gvhvjg", tweet, req.user?._id);
+
+    const deletedTweet = await Tweet.findByIdAndDelete(tweetId)
+    if (!deletedTweet) {
+        throw new APIError(500, 'Somthing went wrong while deleting Tweet!!!')
+    }
+    console.log(deletedTweet);
+    return res
+        .status(200)
+        .json(new APIResponce(200, deletedTweet, 'Tweet Deleted Successfully...'));
+});
+
+const updateTweet = asyncHandler(async (req, res) => {
+    const { tweetId } = req.params;
+    const { content } = req.body;
+    if (!tweetId.trim()) {
+        throw new APIError(400, 'Tweet Id Missing!!!');
+    }
+    if (!isValidObjectId(tweetId)) {
+        throw new APIError(401, 'Invalid Tweet ID');
+    }
+
+    const tweet = await Tweet.findById(tweetId);
+    if (!tweet) {
+        throw new APIError(404, 'Tweet not Found');
+    }
+
+    if (tweet?.tweetOwner.toString() !== req.user?._id.toString()) {
+        throw new APIError(401, 'Unauthorized Access!!!');
+    }
+    const updatedContent = content.trim() ? content : tweet?.content;
+    const updatedTweet = await Tweet.findByIdAndUpdate(tweetId, {
+        $set: {
+            content: updatedContent,
+        },
+    },
+        {
+            new: true,
+        },
+    )
+
+    if (!updateTweet) {
+        throw new APIError(500, 'Something went wrong while updating Tweet')
+    }
+    return res
+        .status(201)
+        .json(new APIResponce(200, updatedTweet, 'Tweet Updated Successfully...'))
+});
 
 
 
 export {
     createTweet,
     getUserTweet,
-    
+    deleteTweet,
+    updateTweet
 }
