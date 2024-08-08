@@ -10,18 +10,22 @@ cloudinary.config({
 
  const deletefromCloudinary = async (fileURL) => {
     try {
-        const publicId = fileURL.split('/').pop().split('.')[0]
-        await cloudinary.uploader.destroy(publicId, function (error, result) {
-            if (error) {
-                console.log(error.message);
-                return null;
-            }
-            console.log("Result:", result);
-        });
+         // Extract the public ID from the URL
+         const publicId = fileURL.split('/').pop().split('.')[0];
+
+ 
+         // Determine resource type
+         const fileType = fileURL.split('.').pop();
+         const resourceType = (fileType === 'mp4') ? 'video' : 'image';
+ 
+         // Destroy the resource on Cloudinary
+         const result = await cloudinary.uploader.destroy(publicId, { resource_type: resourceType });
+         console.log("Result:", result);
 
     } catch (error) {
         console.log(error?.msg);
         return null;
     }
 }
+
 export default deletefromCloudinary;

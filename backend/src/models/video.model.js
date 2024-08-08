@@ -7,7 +7,7 @@ const videoSchema=new Schema(
             type:String,   //cloudnary URL  
             required:true
         },
-        thumnail:{
+        thumbnail:{
             type:String,   //cloudnary URL  
             required:true
         },
@@ -27,10 +27,7 @@ const videoSchema=new Schema(
             type:Number,     
             default:0
         },
-        videoFile:{
-            type:String,   //cloudnary URL  
-            required:true
-        },
+        
         isPublished:{
             type:Boolean,
             default:true
