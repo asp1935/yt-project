@@ -93,7 +93,7 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
 
         return res
             .status(200)
-            .json(new APIResponce(200, { isLiked: false }, 'Tweet Uliked...'))
+            .json(new APIResponce(200, { isLiked: false }, 'Tweet Unliked...'))
     }
 
     const commentLike = await Like.create({
@@ -106,7 +106,7 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
     }
     return res
         .status(200)
-        .json(200, commentLike, 'Comment Liked...')
+        .json(new APIResponce(200, commentLike, 'Comment Liked...'))
 });
 const getLikedVideos = asyncHandler(async (req, res) => {
     const { userId } = req.user?._id;
