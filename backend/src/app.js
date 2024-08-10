@@ -36,6 +36,9 @@ import likeRouter from './routes/like.route.js';
 import videoRouter from './routes/video.route.js';
 import commentRouter from './routes/comment.route.js';
 import subscriptionRouter from './routes/subscription.route.js';
+import playlistRouter from './routes/playlist.route.js';
+import { healthCheck } from './controllers/healthcheck.controller.js';
+
 //route Declaration
 //here we cant use app.get because seprated all things thats why we are using app.use() to bring route we need to use middleware
 //api/v1/ is used for standard practice
@@ -46,5 +49,7 @@ app.use("/api/v1/like",likeRouter);
 app.use("/api/v1/video",videoRouter);
 app.use("/api/v1/comment",commentRouter);
 app.use("/api/v1/subscription",subscriptionRouter);
+app.use("/api/v1/playlist",playlistRouter);
+app.use("/api/v1/healthcheck",healthCheck);
 
 export {app}
