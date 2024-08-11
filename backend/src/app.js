@@ -37,6 +37,7 @@ import videoRouter from './routes/video.route.js';
 import commentRouter from './routes/comment.route.js';
 import subscriptionRouter from './routes/subscription.route.js';
 import playlistRouter from './routes/playlist.route.js';
+import dashboardRouter from './routes/dashboard.route.js'
 import { healthCheck } from './controllers/healthcheck.controller.js';
 
 //route Declaration
@@ -50,6 +51,8 @@ app.use("/api/v1/video",videoRouter);
 app.use("/api/v1/comment",commentRouter);
 app.use("/api/v1/subscription",subscriptionRouter);
 app.use("/api/v1/playlist",playlistRouter);
+app.use("/api/v1/dashboard",dashboardRouter);
 app.use("/api/v1/healthcheck",healthCheck);
+
 
 export {app}

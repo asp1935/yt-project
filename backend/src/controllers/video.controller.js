@@ -9,7 +9,7 @@ import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 
 const getAllVideos = asyncHandler(async (req, res) => {
-    const { page = 1, limit = 10, query, sortBy='createdAt', sortType='desc', userId } = req.query;
+    const { page = 1, limit = 10, query, sortBy = 'createdAt', sortType = 'desc', userId } = req.query;
 
 
 
@@ -63,27 +63,27 @@ const getAllVideos = asyncHandler(async (req, res) => {
             },
         });
     }
-    
+
 
 
     pipeline.push({
-        $lookup:{
-            from:'users',
-            localField:'videoOwner',
-            foreignField:'_id',
-            as:'videoOwnerDetails',
-            pipeline:[
+        $lookup: {
+            from: 'users',
+            localField: 'videoOwner',
+            foreignField: '_id',
+            as: 'videoOwnerDetails',
+            pipeline: [
                 {
-                    $project:{
-                        fullName:1,
-                        username:1,
-                        avatar:1
+                    $project: {
+                        fullName: 1,
+                        username: 1,
+                        avatar: 1
                     }
                 }
             ]
         }
-    },{
-        $unwind:'$videoOwnerDetails'
+    }, {
+        $unwind: '$videoOwnerDetails'
     });
 
     // const allVideos =await Video.aggregate(pipeline);
@@ -92,22 +92,136 @@ const getAllVideos = asyncHandler(async (req, res) => {
     //     throw new APIError(500,'Somthing went wrong while featching Videos!!!');
     // }
 
-    const options={
-        page:parseInt(page,10),
-        limit:parseInt(limit,10)
+    const options = {
+        page: parseInt(page, 10),
+        limit: parseInt(limit, 10)
     }
-    const paginatedVideos = await Video.aggregatePaginate(pipeline,options);
+    const paginatedVideos = await Video.aggregatePaginate(pipeline, options);
 
-    if(!paginatedVideos){
-        throw new APIError(500,'Something went wrong while Paginating Videos!!!');
+    if (!paginatedVideos) {
+        throw new APIError(500, 'Something went wrong while Paginating Videos!!!');
     }
 
-    return res  
+    return res
         .status(200)
-        .json(new APIResponce(200,paginatedVideos,'Successfully Video Fetched...'))
+        .json(new APIResponce(200, paginatedVideos, 'Successfully Video Fetched...'))
 
 
 
+
+});
+
+const getVideoById = asyncHandler(async (req, res) => {
+    const { videoId } = req.params;
+
+    if (!isValidObjectId(videoId)) {
+        throw new APIError(400, 'Invalid video ID!!!');
+    }
+
+    const singleVideo = await Video.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(videoId)
+            }
+        },
+        {
+            $lookup: {
+                from: 'likes',
+                localField: '_id',
+                foreignField: 'video',
+                as: 'likes'
+            }
+        },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'videoOwner',
+                foreignField: '_id',
+                as: 'videoOwner',
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: 'subscriptions',
+                            localField: '_id',
+                            foreignField: 'channel',
+                            as: 'subscribers',
+
+                        }
+                    },
+                    {
+                        $addFields: {
+                            subscriberCount: {
+                                $size: '$subscribers'
+                            },
+                            isSubscribed: {
+                                $cond: {
+                                    if: {
+                                        $in: [req.user?._id, '$subscribers.subsciber']
+                                    },
+                                    then: true,
+                                    else: false,
+                                }
+                            }
+                        }
+                    },
+                    {
+                        $project:{
+                            fullname:1,
+                            username:1,
+                            avatar:1,
+                            subscriberCount:1,
+                            isSubscribed:1
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $addFields:{
+                likeCount:{
+                    $size:'$likes'
+                },
+                videoOwner:{
+                    $first:'$videoOwner'
+                },
+                isLiked:{
+                    $cond:{
+                        if:{
+                            $and: [
+                                { $in: [new mongoose.Types.ObjectId(videoId), '$likes.video'] },
+                                { $in: [req.user?._id, '$likes.likeBy'] }
+                            ]
+                            
+                        },
+                        then:true,
+                        else:false
+                    }   
+                }
+            }
+        },
+        {
+            $project:{
+                videoFile:1,
+                thumbnail:1,
+                title:1,
+                description:1,
+                duration:1,
+                views:1,
+                videoOwner:1,
+                likeCount:1,
+                isLiked:1,
+                updatedAt:1
+                
+            }
+        }
+    ]);
+
+    if (!singleVideo || singleVideo.length === 0) {
+        throw new APIError(500,'Something Went wrong while fetching video!!!');
+    }
+    return res
+        .status(200)
+        .json(new APIResponce(200,singleVideo,'Successfully Fetched Video...'))
 
 });
 
@@ -294,6 +408,7 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
 
 export {
     getAllVideos,
+    getVideoById,
     publishVideo,
     updateVideoDetails,
     updateVideoThumbnail,

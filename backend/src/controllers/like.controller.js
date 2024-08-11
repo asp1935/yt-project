@@ -11,7 +11,7 @@ const toggelVideoLike = asyncHandler(async (req, res) => {
         throw new APIError(400, 'Invalid Video Id!!!')
     }
 
-    const alreadyLike = Like.findOne({
+    const alreadyLike =await Like.findOne({
         video: videoId,
         likeBy: req.user?._id
     })
@@ -109,7 +109,7 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
         .json(new APIResponce(200, commentLike, 'Comment Liked...'))
 });
 const getLikedVideos = asyncHandler(async (req, res) => {
-    const { userId } = req.user?._id;
+    const userId  = req.user?._id;
 
     const likedVideos = await Like.aggregate([
         {
