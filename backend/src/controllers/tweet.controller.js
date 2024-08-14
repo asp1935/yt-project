@@ -22,7 +22,6 @@ const createTweet = asyncHandler(async (req, res) => {
     if (!createdTweet) {
         throw new APIError(500, 'Something wend wrong while posting tweet!!!')
     }
-    // console.log(createdTweet);
 
     return res
         .status(200)
@@ -112,7 +111,6 @@ const getUserTweet = asyncHandler(async (req, res) => {
         throw new APIError(500, 'Something went wrong while fetching ')
     }
 
-    // console.log(tweets);
     return res
         .status(200)
         .json(new APIResponce(200, tweets, 'User Tweets'))
@@ -120,7 +118,6 @@ const getUserTweet = asyncHandler(async (req, res) => {
 
 const deleteTweet = asyncHandler(async (req, res) => {
     const { tweetId } = req.params;
-    // console.log(tweetId);
     if (!tweetId?.trim()) {
         throw new APIError(400, 'Tweet Id Missing')
     }
@@ -137,13 +134,12 @@ const deleteTweet = asyncHandler(async (req, res) => {
     if (tweet?.tweetOwner.toString() !== req.user?._id.toString()) {
         throw new APIError('401', 'Unauthorized Access!!!')
     }
-    console.log("gvhvjg", tweet, req.user?._id);
+
 
     const deletedTweet = await Tweet.findByIdAndDelete(tweetId)
     if (!deletedTweet) {
         throw new APIError(500, 'Somthing went wrong while deleting Tweet!!!')
     }
-    console.log(deletedTweet);
     return res
         .status(200)
         .json(new APIResponce(200, deletedTweet, 'Tweet Deleted Successfully...'));

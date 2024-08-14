@@ -12,7 +12,7 @@ import mongoose from 'mongoose';
 const genrateAccessAndRefreshToken = async (userId) => {
     try {
         //find user 
-        // console.log(userId);
+
         const user = await User.findById(userId);
 
         //genrate tokens
@@ -24,7 +24,6 @@ const genrateAccessAndRefreshToken = async (userId) => {
         //save method update db and validateBeforeSave:false is given because we are updating only single value thats why it calls mongoose moduls like require like 
         //so we give validateBeforeSave:false it save/update  data without validation  
         await user.save({ validateBeforeSave: false })
-        // console.log(refreshToken,accessToken);
         return { refreshToken, accessToken }
 
     } catch (error) {
@@ -49,7 +48,6 @@ const registerUser = asyncHandler(async (req, res) => {
 
     // 1.get user details from frontend
     const { fullName, email, username, password } = req.body
-    // console.log(req.files);
 
     // 2.validate data- check empty
     /*if(fullName===''){
@@ -94,7 +92,6 @@ const registerUser = asyncHandler(async (req, res) => {
 
     const avatar = await uploadOnCloudinary(avatarLocalPath)
     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
-    // console.log(coverImage);
     if (!avatar) {
         throw new APIError(400, 'Avatar file Required')
     }
@@ -139,7 +136,6 @@ const loginUser = asyncHandler(async (req, res) => {
 
     // 1.get credientails
     const { email, username, password } = req.body
-    // console.log(email);
     // 2.validate credientails (email-username)
 
     // for compasory email & usename
@@ -179,7 +175,6 @@ const loginUser = asyncHandler(async (req, res) => {
     // 6.send cookies 
     // this db call is expensive because if i use old userobject in that refreshtoken and accesstoken are empty 
     const loggedInUser = await User.findById(user._id).select('-password -refreshToken')
-    // console.log(loggedInUser);
     //cookie options - by default cookie can modified at client side 
     //so this options are require to prevent from modification on clinet side but from server side we can modify
     const options = {
@@ -203,7 +198,6 @@ const loginUser = asyncHandler(async (req, res) => {
 
 const logoutUser = asyncHandler(async (req, res) => {
     //req.user our object add from auth.middleware
-    // console.log(req.user);
     await User.findByIdAndUpdate(
         req.user._id,
         {
@@ -269,7 +263,6 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         }
 
         const { refreshToken, accessToken } = await genrateAccessAndRefreshToken(user._id);
-        console.log(refreshToken, accessToken);
         return res
             .status(200)
             .cookie('accessToken', accessToken, options)
@@ -292,7 +285,6 @@ const changeCurrectPassword = asyncHandler(async (req, res) => {
     if(newPassword!==confPassword){
         throw new APIError(400,'New Password and Confirm Password  not Match')
     }*/
-    // console.log(oldPassword,newPassword);
     //loggedin user from request.user from middleware set new object current user
     const user = await User.findById(req.user?._id);
 
@@ -474,7 +466,7 @@ const getUserchannelProfile = asyncHandler(async (req, res) => {
         }
     ])
 
-    console.log(channel);
+    // console.log(channel);
 
     if (!channel?.length) {
         throw new APIError(404, 'Channel Does not Exists!!!');

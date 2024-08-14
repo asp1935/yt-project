@@ -11,7 +11,6 @@ export const verifyJWT=asyncHandler(async(req,_,next)=>{
      //taking cookies from req if not available if there is mobile app then taking from custom header
      //Authorization is key in header
      //and value format is Bearer <token> so extract vthat token
-    //  console.log(req.cookies?.accessToken);
      const token = req.cookies?.accessToken || req.header('Authorization')?.replace('Bearer ','');
   
      if(!token){
@@ -28,10 +27,8 @@ export const verifyJWT=asyncHandler(async(req,_,next)=>{
          throw new APIError(401,'Invalid Access Token!!!')
      }
      
-    //  console.log(user);
      //main part adding new object in req
      req.user=user;
-    //  console.log(req);
      next();
    } catch (error) {
         throw new APIError(401,error?.message || "Invalid Access Token")

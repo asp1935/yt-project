@@ -241,7 +241,6 @@ const publishVideo = asyncHandler(async (req, res) => {
 
     const videoUrl = await uploadOnCloudinary(videoLocalFilePath);
     const thumbnailUrl = await uploadOnCloudinary(thumbnailLoaclFilePath);
-    // console.log(videoUrl);
 
     const video = await Video.create({
         title,
