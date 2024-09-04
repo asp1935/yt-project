@@ -165,63 +165,63 @@ const getVideoById = asyncHandler(async (req, res) => {
                         }
                     },
                     {
-                        $project:{
-                            fullname:1,
-                            username:1,
-                            avatar:1,
-                            subscriberCount:1,
-                            isSubscribed:1
+                        $project: {
+                            fullname: 1,
+                            username: 1,
+                            avatar: 1,
+                            subscriberCount: 1,
+                            isSubscribed: 1
                         }
                     }
                 ]
             }
         },
         {
-            $addFields:{
-                likeCount:{
-                    $size:'$likes'
+            $addFields: {
+                likeCount: {
+                    $size: '$likes'
                 },
-                videoOwner:{
-                    $first:'$videoOwner'
+                videoOwner: {
+                    $first: '$videoOwner'
                 },
-                isLiked:{
-                    $cond:{
-                        if:{
+                isLiked: {
+                    $cond: {
+                        if: {
                             $and: [
                                 { $in: [new mongoose.Types.ObjectId(videoId), '$likes.video'] },
                                 { $in: [req.user?._id, '$likes.likeBy'] }
                             ]
-                            
+
                         },
-                        then:true,
-                        else:false
-                    }   
+                        then: true,
+                        else: false
+                    }
                 }
             }
         },
         {
-            $project:{
-                videoFile:1,
-                thumbnail:1,
-                title:1,
-                description:1,
-                duration:1,
-                views:1,
-                videoOwner:1,
-                likeCount:1,
-                isLiked:1,
-                updatedAt:1
-                
+            $project: {
+                videoFile: 1,
+                thumbnail: 1,
+                title: 1,
+                description: 1,
+                duration: 1,
+                views: 1,
+                videoOwner: 1,
+                likeCount: 1,
+                isLiked: 1,
+                updatedAt: 1
+
             }
         }
     ]);
 
     if (!singleVideo || singleVideo.length === 0) {
-        throw new APIError(500,'Something Went wrong while fetching video!!!');
+        throw new APIError(500, 'Something Went wrong while fetching video!!!');
     }
     return res
         .status(200)
-        .json(new APIResponce(200,singleVideo,'Successfully Fetched Video...'))
+        .json(new APIResponce(200, singleVideo, 'Successfully Fetched Video...'))
 
 });
 

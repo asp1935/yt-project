@@ -1,5 +1,5 @@
 //utils use for same code or functinality or utility we are using multiple time like file upload to cloud,api related
-//so this asyncHandle main use for creating asynchronous functions and handling errors 
+//so this asyncHandler main use for creating asynchronous functions and handling errors 
 
 // this is a higher order function  which take functions as arugment or return function
 

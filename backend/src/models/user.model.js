@@ -53,7 +53,7 @@ const userSchema=new Schema({
     timestamps:true
 })
 
-//direct encriptions is not podssible 
+//direct encriptions is not possible 
 //so we need to use mongoose hooks 
 //pre middleware(hook) execute just before data is saving
 //save is event pre hook execute before save
@@ -64,7 +64,7 @@ const userSchema=new Schema({
 userSchema.pre('save',async function(next){
     //check if password is not modified then return otherwise encript new password
     if(!this.isModified('password')) return next()
-    //bcrypt hash method encript password 1st arg is password and 2nd arg is saltValue (rounds-8,10,)
+    //bcrypt hash method encrpt password 1st arg is password and 2nd arg is saltValue (rounds-8,10,)
     this.password=await bcrypt.hash(this.password,10)
     next()
 })
@@ -98,7 +98,7 @@ userSchema.methods.genrateAccessToken=function(){
 //refresh toekn are long lived
 //in access token if expiry is only 15 min then after 15min user has to login again that time refresh token comes in 
 //refresh token is store on db as well as client side using this token user does not have to enter password again 
-//hit endpint to server if client refreshtoken and sever refresh token is same then server give new accesstoken to user amdavli karun gheychi 
+//hit endpint to server if client refreshtoken and sever refresh token is same then server give new accesstoken to user mdavli karun gheychi 
 
 userSchema.methods.genrateRefreshToken=function(){
     return jwt.sign(

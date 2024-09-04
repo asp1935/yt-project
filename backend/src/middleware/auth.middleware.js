@@ -3,7 +3,7 @@ import { APIError } from "../utils/APIError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from 'jsonwebtoken'
 
-//this middlware used to chekc is there user there or not 
+//this middlware used to check is there user there or not 
 //on the basis of token we are verifying
 // async(req,res,next) in this we are not using res then we can user _ insted of res 
 export const verifyJWT=asyncHandler(async(req,_,next)=>{

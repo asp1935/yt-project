@@ -76,7 +76,7 @@ const registerUser = asyncHandler(async (req, res) => {
     const coverImageFile = req.files?.coverImage[0];
 
     //multer (middleware give this access to files )
-    //in that we get array of that file and we are takaing llocal path from that 
+    //in that we get array of that file and we are taking local path from that 
 
     const avatarLocalPath = req.files?.avatar[0]?.path;
     // const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
@@ -93,7 +93,7 @@ const registerUser = asyncHandler(async (req, res) => {
     const avatar = await uploadOnCloudinary(avatarLocalPath)
     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
     if (!avatar) {
-        throw new APIError(400, 'Avatar file Required')
+        throw new APIError(500, 'Something went wrong while uploading file!!!');
     }
 
 
@@ -250,7 +250,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
             throw new APIError(401, 'Invalid Refresh Token')
         }
 
-        //incoomingRT is fromuser cide
+        //incooming RT is from user side
         //user.refreshT is frm current user data from db
 
         if (incomingRefreshToken !== user?.refreshToken) {
@@ -314,7 +314,7 @@ const getCurrectUser = asyncHandler(async (req, res) => {
         .json(new APIResponce(200, req.user, "Currunt User Fetch Successfully..."))
 });
 
-//in this controller only updating text data because in produiction level new controller is created  for file data update like image for low congestion
+//in this controller only updating text data because in prododuction level new controller is created  for file data update like image for low congestion
 //this controller require auth middlware
 const updateAccountDetails = asyncHandler(async (req, res) => {
     const { fullName, email } = req.body;
