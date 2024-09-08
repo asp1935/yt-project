@@ -1,8 +1,22 @@
+/* eslint-disable no-unused-vars */
 import React from 'react'
 import {useForm} from 'react-hook-form';
 import {useMutation} from '@tanstack/react-query'
 import { login_user } from '../API/APICalls';
+import { useDispatch, useSelector } from 'react-redux';
+import { setAuthLogin } from '../Redux/Slice/AuthSlice';
+import { useLocation, useNavigate } from 'react-router-dom';
 function Login() {
+
+  const dispatch=useDispatch();
+  const isAuthorized=useSelector(state=>state.authReducer.isAuthorize);
+  const username=useSelector(state=>state.authReducer.username);
+
+  const navigate=useNavigate();
+  const location=useLocation();
+
+  const from=location.state?.from?.pathname || '/';
+
 
   const {register,handleSubmit,formState:{isSubmitting,errors}}=useForm({defaultValues:{
     email:'',
@@ -20,6 +34,8 @@ function Login() {
       mutationFn:(data)=>login_user(data.email,data.username,data.password),
       onSuccess:(data)=>{
         console.log(data);
+        dispatch(setAuthLogin(data.data.user.username))
+        navigate(from,{replace:true});
       },
       onError:(error)=>{
         console.error(error);
@@ -37,8 +53,9 @@ function Login() {
     
   }
   if(isSuccess){
-    console.log(data);
-      
+    console.log(isAuthorized);
+    console.log(username);
+    
   }
 
   return (

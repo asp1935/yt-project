@@ -181,7 +181,8 @@ const loginUser = asyncHandler(async (req, res) => {
     //so this options are require to prevent from modification on clinet side but from server side we can modify
     const options = {
         httpOnly: true,
-        secure: true
+        secure: true,
+        maxAge: 60 * 1000,
     }
 
     return res
