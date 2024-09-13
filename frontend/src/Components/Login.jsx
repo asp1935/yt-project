@@ -1,10 +1,11 @@
 /* eslint-disable no-unused-vars */
-import React from 'react'
+import React from 'react';
+import Cookies from 'js-cookie';
 import {useForm} from 'react-hook-form';
 import {useMutation} from '@tanstack/react-query'
 import { login_user } from '../API/APICalls';
 import { useDispatch, useSelector } from 'react-redux';
-import { setAuthLogin } from '../Redux/Slice/AuthSlice';
+import { setAuthLogin, setAuthLogout } from '../Redux/Slice/AuthSlice';
 import { useLocation, useNavigate } from 'react-router-dom';
 function Login() {
 
@@ -34,7 +35,7 @@ function Login() {
       mutationFn:(data)=>login_user(data.email,data.username,data.password),
       onSuccess:(data)=>{
         console.log(data);
-        dispatch(setAuthLogin(data.data.user.username))
+        
         navigate(from,{replace:true});
       },
       onError:(error)=>{

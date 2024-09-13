@@ -5,7 +5,7 @@ import { deleteVideo, getAllVideos, getVideoById, publishVideo, togglePublishSta
 
 const router = Router();
 
-router.use(verifyJWT);
+
 
 router.route('/publish-video').post(upload.fields(
     [
@@ -20,6 +20,7 @@ router.route('/publish-video').post(upload.fields(
     ]),
      publishVideo);
 router.route('/get-videos').get(getAllVideos);
+router.use(verifyJWT);
 router.route('/get-videoby-id/:videoId').get(getVideoById);
 router.route('/update-video-details/:videoId').patch(updateVideoDetails);
 router.route('/update-video-thumbnail/:videoId').patch(upload.single('thumbnail'),updateVideoThumbnail);

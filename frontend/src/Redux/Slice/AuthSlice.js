@@ -4,16 +4,16 @@ const AuthSlice=createSlice({
     name:'authReducer',
     initialState:{
         isAuthorize:false,
-        username:''
+        // username:''
     },
     reducers:{
-        setAuthLogin:(state,action)=>{
-            state.isAuthorize=true,
-            state.username=action.payload
+        setAuthLogin:(state)=>{
+            state.isAuthorize=true
+            
         },
         setAuthLogout:(state)=>{
-            state.isAuthorize=false,
-            state.username=''
+            state.isAuthorize=false
+            // state.username=''
         }
     }
 })
