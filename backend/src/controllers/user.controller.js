@@ -182,13 +182,22 @@ const loginUser = asyncHandler(async (req, res) => {
     const options = {
         httpOnly: true,
         secure: true,
-        maxAge: 60 * 1000,
-    }
-
+    };
+    
+    const accessTokenOptions = {
+        ...options,
+        maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
+    };
+    
+    const refreshTokenOptions = {
+        ...options,
+        maxAge: 10 * 24 * 60 * 60 * 1000, // 10 days in milliseconds
+    };
+    
     return res
         .status(201)
-        .cookie("accessToken", accessToken, options)
-        .cookie('refreshToken', refreshToken, options)
+        .cookie("accessToken", accessToken, accessTokenOptions)
+        .cookie('refreshToken', refreshToken, refreshTokenOptions)    
         .json(
             new APIResponce(200,
                 {

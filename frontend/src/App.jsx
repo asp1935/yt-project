@@ -4,6 +4,7 @@ import Home from './Components/Home/Home';
 import Login from './Components/Login';
 import Dashboard from './Components/Dashboard';
 import Navbar from './Components/Navbar';
+import Video from './Components/Video/Video';
 function App() {
   return (
     <>
@@ -14,6 +15,7 @@ function App() {
           <Route index element={<Home/>}/>
           <Route path='/login' element={<Login/>}/>
           <Route path='/dashboard' element={<Dashboard/>}/>
+          <Route path='/video/:videoId' element={<Video/>}/>
         </Routes>
       </Router>
     </>
