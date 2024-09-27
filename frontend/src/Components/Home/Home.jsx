@@ -9,11 +9,10 @@ import VideoBox from '../Video/VideoBox';
 function Home() {
 
 
-  const navigate = useNavigate();
 
   const { data, isLoading, isError, isSuccess, error } = useQuery({
     queryKey: ['getAllVideos'],
-    queryFn: () => getAllVideos(navigate),
+    queryFn: () => getAllVideos(),
     placeholderData: [],
     keepPreviousData: true,
 

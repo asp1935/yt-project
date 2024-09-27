@@ -5,13 +5,10 @@ import {useForm} from 'react-hook-form';
 import {useMutation} from '@tanstack/react-query'
 import { login_user } from '../API/APICalls';
 import { useDispatch, useSelector } from 'react-redux';
-import { setAuthLogin, setAuthLogout } from '../Redux/Slice/AuthSlice';
 import { useLocation, useNavigate } from 'react-router-dom';
 function Login() {
 
-  const dispatch=useDispatch();
-  const isAuthorized=useSelector(state=>state.authReducer.isAuthorize);
-  const username=useSelector(state=>state.authReducer.username);
+
 
   const navigate=useNavigate();
   const location=useLocation();
@@ -54,8 +51,8 @@ function Login() {
     
   }
   if(isSuccess){
-    console.log(isAuthorized);
-    console.log(username);
+   
+    console.log();
     
   }
 

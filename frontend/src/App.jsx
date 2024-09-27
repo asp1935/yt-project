@@ -11,6 +11,7 @@ function App() {
       {/* <p className='text-3xl p-24'>Testing</p> */}
       <Router>
           <Navbar/>
+          
         <Routes>
           <Route index element={<Home/>}/>
           <Route path='/login' element={<Login/>}/>

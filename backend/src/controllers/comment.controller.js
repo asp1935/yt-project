@@ -37,7 +37,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
             $lookup: {
                 from: 'likes',
                 localField: '_id',
-                foreignField: 'commnet',
+                foreignField: 'comment',
                 as: 'likeDetails'
             },
         },
@@ -73,7 +73,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
                     avatar: 1,
                 },
                 isLiked: 1,
-                createdAt: 1,
+                updatedAt: 1,
 
 
             }
@@ -96,6 +96,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
 const addComment = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
     const { content } = req.body;
+    
 
     if (!isValidObjectId(videoId)) {
         throw new APIError(400, 'vidoe Id Invalid!!!');

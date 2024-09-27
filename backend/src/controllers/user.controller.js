@@ -114,7 +114,7 @@ const registerUser = asyncHandler(async (req, res) => {
     // select  method is used to specify which field whant to exclude or include  
     // syntax is unique like i wnat to exclude password and refreshtoken so - sign is given and fields are seprated by space
     const createdUser = await User.findById(user._id).select("-password -refreshToken")
-    if (!createdUser) {
+    if (!createdUser) { 
         throw new APIError(500, 'Something is went wrong while Registering the User')
     }
 

@@ -1,9 +1,11 @@
 import {configureStore} from '@reduxjs/toolkit'
-import AuthSlice from './Slice/AuthSlice';
+import UserSlice from './Slice/UserSlice';
+import CommentSlice from './Slice/CommentSlice';
 
 const store=configureStore({
     reducer:{
-        authReducer:AuthSlice
+        userReducer:UserSlice,
+        commentReducer:CommentSlice,
 
     }
 });
