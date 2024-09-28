@@ -2,11 +2,12 @@
 import { useQuery } from '@tanstack/react-query';
 import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { getVideoById, toggleLike, toggleSubscribe } from '../../API/APICalls';
+import { getVideoById, toggleSubscribe, toggleVideoLike } from '../../API/APICalls';
 import ReadMore from '../ReadMore';
 import CommentBox from '../Comments/CommentBox';
 import useAuthUser from '../../Utilities/useAuthUser';
 import { useSelector } from 'react-redux';
+import Comments from '../Comments/Comments';
 
 function Video() {
     useAuthUser();
@@ -101,7 +102,7 @@ function Video() {
     }
     const handleLikeClick = async (videoId) => {
         try {
-            const responce = await toggleLike(videoId);
+            const responce = await toggleVideoLike(videoId);
             if (responce?.data?.isLiked === undefined) {
                 setIsLiked(prevState => ({
                     ...prevState,
@@ -173,6 +174,7 @@ function Video() {
                                 <div>
                                     <p className='text-xl font-semibold'>{(commentCnt>0)?`${commentCnt} Comment${(commentCnt===1)?'':'s'}`:'No Comments'}</p>
                                     <CommentBox/>
+                                    <Comments />
                                 </div>
                             </div>
                         </div>

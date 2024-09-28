@@ -1,30 +1,55 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useParams } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { setCommentCnt } from '../../Redux/Slice/CommentSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearComments, setCommentCnt } from '../../Redux/Slice/CommentSlice';
 import UserComments from './UserComment';
 import { getVideoComments as fetchVideoComment } from '../../API/APICalls';
+import { user } from '../../Redux/Slice/UserSlice';
 
 function Comments() {
+  
   const { videoId } = useParams();
   const [commentData, setCommentData] = useState();
   const [videoComments, setVideoComments] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [pages, setPages] = useState(1);
-
+  
+  const userData=useSelector(user);
+  const newUserComment=useSelector(state=>state.commentReducer.newUserComment);
   const dispatch = useDispatch();
 
   const getVideoComments = async (videoId, page) => {
     try {
       const response = await fetchVideoComment(videoId, page);
-      console.log(response);
       return response.data;
     } catch (error) {
       console.error(error);
       return null;
     }
   };
+  useEffect(()=>{
+    if(newUserComment){
+      const newComment = {
+        _id: newUserComment._id,
+        content: newUserComment.content,
+        updatedAt: newUserComment.updatedAt,
+        commentOwnerDetails: {
+          _id:userData._id,
+          avatar: userData?.avatar,
+          fullName: userData?.fullName,
+          username: userData?.username
+        },
+        isLiked: false,
+        likeCount: 0
+      };
+
+      setVideoComments(prevComments=>[newComment,...prevComments])
+      dispatch(clearComments());
+    }
+    
+  },[dispatch, newUserComment, userData?.avatar, userData?.fullName, userData?.username])
 
   useEffect(() => {
     const initialLoadComments = async () => {
@@ -51,6 +76,18 @@ function Comments() {
       setHasMore(false)
     }
   };
+  const updateCommentList=(updateComment)=>{
+    setVideoComments(prevComments=>
+      prevComments.map(comment=>
+        comment._id===updateComment._id?{...comment,content:updateComment.content,...(updateComment.updatedAt)&&{ updatedAt:updateComment?.updatedAt}}:comment
+      )
+    );
+  };
+  const deleteComment=(commentId)=>{
+    setVideoComments(prevComments=>
+      prevComments.filter((comment)=>comment._id!== commentId)
+    );
+  };
 
   return (
     <div>
@@ -64,7 +101,7 @@ function Comments() {
       >
 
         {videoComments.map((comment) => (
-          <UserComments comment={comment} key={comment._id} />
+          <UserComments comment={comment} key={comment._id} updateCommentList={updateCommentList} deleteComment={deleteComment}/>
         ))}
 
       </InfiniteScroll>

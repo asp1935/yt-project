@@ -3,43 +3,92 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { user } from '../../Redux/Slice/UserSlice';
 import { useMutation } from '@tanstack/react-query';
-import { add_comment } from '../../API/APICalls';
+import { add_comment, update_comment } from '../../API/APICalls';
 import { useParams } from 'react-router-dom';
 import { setNewUserComment } from '../../Redux/Slice/CommentSlice';
-import Comments from './Comments';
 
-function CommentBox() {
+function CommentBox({ cmtId, cmtContent ,updateCommentList}) {
   const currentUser = useSelector(user);
   const { videoId } = useParams();
   const [newComment, setNewComment] = useState('');
   const dispatch = useDispatch();
+  const [commentId, setCommentId] = useState();
+  const [update, setUpdate] = useState(false);
+
+  useEffect(() => {
+    if (cmtId && cmtContent) {
+      setNewComment(cmtContent);
+      setCommentId(cmtId);
+      setUpdate(true);
+    }
+  }, [cmtContent, cmtId]);
 
   const handleComment = (e) => {
     setNewComment(e.target.value);
-  };
+    console.log(newComment);
+    
+  }
 
-  const { mutate, isSuccess, isLoading, data } = useMutation({
+  const updateCommentMutation = useMutation({
+    mutationKey: ['update_comment'],
+    mutationFn: ({ cmtId, updatedComment }) => update_comment(cmtId, updatedComment),
+    onSuccess:(data)=>{
+      dispatch(setNewUserComment(data.data));
+      setNewComment('');
+      updateCommentList(data.data);
+    },
+    onError: () => {
+      console.log('Something went wrong while updating...');
+
+    }
+  })
+
+  const addNewCommentMutation = useMutation({
     mutationKey: ['add_comment'],
     mutationFn: ({ videoId, newComment }) => add_comment(videoId, newComment),
-
+    onSuccess:(data)=>{
+      dispatch(setNewUserComment(data.data));
+      setNewComment('');
+      
+      
+    },
     onError: () => {
       console.log('Something went wrong while commenting');
     },
   });
 
-  useEffect(() => {
-    if (isSuccess && data?.data) {
-      dispatch(setNewUserComment(data.data));
-      setNewComment('');  // Clear the input field after successful submission
-      console.log('Comment posted successfully:', data.data);
-    }
-  }, [isSuccess, data, dispatch]);
+  // useEffect(() => {
+  //   const { isSuccess, data } = update ? updateCommentMutation : addNewCommentMutation;    
+  //   if (isSuccess && data.data) {
+  //     dispatch(setNewUserComment(data.data));
+  //     setNewComment('');  // Clear the input field after successful submission
+  //     console.log('Comment posted successfully:', data.data); 
+  //     if(update){ 
+        
+  //       updateCommentList(data.data)
+  //     }
+  //   }
+  // }, [dispatch, update, updateCommentMutation.isSuccess, addNewCommentMutation.isSuccess, updateCommentMutation.data, addNewCommentMutation.data, updateCommentMutation, addNewCommentMutation, updateCommentList]);
 
   const handleCommentSubmit = (e) => {
     e.preventDefault();
     if (newComment?.trim()) {
-      mutate({ videoId, newComment: newComment.trim() });
+      if (update) {
+        
+        
+        updateCommentMutation.mutate({ cmtId: commentId, updatedComment: newComment.trim() });
+
+      }
+      else {
+        addNewCommentMutation.mutate({ videoId, newComment: newComment.trim() })
+      }
     }
+  };
+  const handleCancel = () => {
+    setNewComment('');  // Clear the comment input field
+    setUpdate(false);   // Reset the update state, indicating no longer in "edit" mode
+    setCommentId(null); // Clear the commentId being edited (optional)
+    updateCommentList({_id:cmtId,content:cmtContent});
   };
 
   return (
@@ -62,32 +111,32 @@ function CommentBox() {
                 placeholder="Add a Comment..."
               />
               <div
-                className={`${
-                  newComment?.trim().length > 0 ? 'block' : 'hidden'
-                } self-end py-5`}
+                className={`${newComment?.trim().length > 0 ? 'block' : 'hidden'
+                  } self-end py-5`}
               >
                 <button
                   type="reset"
                   className="bg-transparent border rounded-full px-4 py-1 mx-2 text-lg font-semibold hover:bg-white hover:bg-opacity-10"
-                  onClick={() => setNewComment('')}
+                  onClick={handleCancel}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   className="bg-transparent border-2 border-orange-600 rounded-full px-4 py-1 mx-5 text-lg font-semibold hover:bg-orange-600 hover:text-black"
-                  disabled={isLoading}
+                  disabled={addNewCommentMutation.isLoading || updateCommentMutation.isLoading}
                 >
-                  {isLoading ? 'Posting...' : 'Post'}
+                  {addNewCommentMutation.isLoading || updateCommentMutation.isLoading ? 'Posting...' : update ? 'Update' : 'Post'}
                 </button>
               </div>
             </form>
           </div>
         </div>
       </div>
-      <Comments />
+
     </>
   );
 }
+
 
 export default CommentBox;

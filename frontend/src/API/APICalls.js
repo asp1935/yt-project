@@ -105,9 +105,24 @@ export const toggleSubscribe = async (channelId) => {
     }
 }
 
-export const toggleLike = async (videoId) => {
+
+
+/////////////////////Like\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+export const toggleVideoLike = async (videoId) => {
     try {
         const responce = await axios.get(`${url}/like/video-like/${videoId}`, {
+            withCredentials: true
+        });
+        return responce.data
+    } catch (error) {
+        APIErrorHandler(error);
+    }
+}
+
+export const toggleCommentLike = async (commentId) => {
+    try {
+        const responce = await axios.get(`${url}/like/comment-like/${commentId}`, {
             withCredentials: true
         });
         return responce.data
@@ -120,11 +135,11 @@ export const toggleLike = async (videoId) => {
 
 ///////////////////Comments///////////////////////////////
 
-export const getVideoComments=async(videoId,page=1,limit=5)=>{
+export const getVideoComments = async (videoId, page = 1, limit = 5) => {
     try {
-        const responce=await axios.get(`${url}/comment/get-video-comments/${videoId}`,{
-            params:{page,limit},
-            withCredentials:true,
+        const responce = await axios.get(`${url}/comment/get-video-comments/${videoId}`, {
+            params: { page, limit },
+            withCredentials: true,
         });
         return responce.data;
     } catch (error) {
@@ -135,13 +150,38 @@ export const getVideoComments=async(videoId,page=1,limit=5)=>{
 
 export const add_comment = async (videoId, content) => {
     try {
-        const responce = await axios.post(`${url}/comment/add-comment/${videoId}`, 
-            {content},
+        const responce = await axios.post(`${url}/comment/add-comment/${videoId}`,
+            { content },
             {
-            withCredentials: true,
-        });
+                withCredentials: true,
+            });
         return responce.data;
     } catch (error) {
         APIErrorHandler(error);
     }
 };
+
+export const update_comment = async (cmtId, content) => {
+    try {
+        const responce = await axios.patch(`${url}/comment/update-comment/${cmtId}`,
+            { content },
+            { withCredentials: true }
+        );
+        return responce.data;
+    } catch (error) {
+        APIErrorHandler(error);
+    }
+}
+
+export const delete_comment=async(cmtId)=>{
+    try {
+        const responce=await axios.delete(`${url}/comment/delete-comment/${cmtId}`,{
+            withCredentials:true
+        })
+        return responce.data;
+    } catch (error) {
+        APIErrorHandler(error);
+    }
+}
+
+
