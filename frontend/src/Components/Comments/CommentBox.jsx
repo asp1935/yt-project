@@ -6,6 +6,7 @@ import { useMutation } from '@tanstack/react-query';
 import { add_comment, update_comment } from '../../API/APICalls';
 import { useParams } from 'react-router-dom';
 import { setNewUserComment } from '../../Redux/Slice/CommentSlice';
+import PropTypes from 'prop-types';
 
 function CommentBox({ cmtId, cmtContent ,updateCommentList}) {
   const currentUser = useSelector(user);
@@ -25,15 +26,12 @@ function CommentBox({ cmtId, cmtContent ,updateCommentList}) {
 
   const handleComment = (e) => {
     setNewComment(e.target.value);
-    console.log(newComment);
-    
   }
 
   const updateCommentMutation = useMutation({
     mutationKey: ['update_comment'],
     mutationFn: ({ cmtId, updatedComment }) => update_comment(cmtId, updatedComment),
     onSuccess:(data)=>{
-      dispatch(setNewUserComment(data.data));
       setNewComment('');
       updateCommentList(data.data);
     },
@@ -49,8 +47,6 @@ function CommentBox({ cmtId, cmtContent ,updateCommentList}) {
     onSuccess:(data)=>{
       dispatch(setNewUserComment(data.data));
       setNewComment('');
-      
-      
     },
     onError: () => {
       console.log('Something went wrong while commenting');
@@ -138,5 +134,10 @@ function CommentBox({ cmtId, cmtContent ,updateCommentList}) {
   );
 }
 
+CommentBox.propTypes={
+  cmtId:PropTypes.string, 
+  cmtContent:PropTypes.string ,
+  updateCommentList:PropTypes.func,
+}
 
 export default CommentBox;
