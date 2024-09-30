@@ -59,6 +59,8 @@ export const login_user = async (email, username, password) => {
 
 export const getAllVideos = async (page = 1, limit = 10, query = '', sortBy = 'createdAt', sortType = 'desc') => {
     try {
+        console.log(page);
+        
         const responce = await axios.get(`${url}/video/get-videos`, {
             params: { page, limit, query, sortBy, sortType },
             withCredentials: true

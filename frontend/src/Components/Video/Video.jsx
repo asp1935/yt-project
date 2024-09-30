@@ -8,6 +8,7 @@ import CommentBox from '../Comments/CommentBox';
 import useAuthUser from '../../Utilities/useAuthUser';
 import { useSelector } from 'react-redux';
 import Comments from '../Comments/Comments';
+import HorizontalVideoBox from './HorizontalVideoBox';
 
 function Video() {
     useAuthUser();
@@ -183,7 +184,7 @@ function Video() {
                     )}
                 </div>
                 <div className='w-full sm:w-[30%]'>
-                    <p>aasdasdsadsd</p>
+                    <HorizontalVideoBox/>
                 </div>
             </div>
         </div>
