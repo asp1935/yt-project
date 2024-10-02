@@ -57,6 +57,24 @@ export const login_user = async (email, username, password) => {
     }
 };
 
+export const getchannelProfile=async (username)=>{
+    try {
+        const responce=await axios.get(`${url}/users/channel/${username.username}`,
+            {
+                withCredentials:true
+            }
+            
+        );
+        return responce.data;
+    } catch (error) {
+        APIErrorHandler(error);
+    }
+}
+
+
+
+///////////////////////////Video\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
 export const getAllVideos = async (page = 1, limit = 10, query = '', sortBy = 'createdAt', sortType = 'desc') => {
     try {
         console.log(page);

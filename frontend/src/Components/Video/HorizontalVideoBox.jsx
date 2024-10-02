@@ -3,11 +3,13 @@ import React, { useEffect, useState } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { getAllVideos } from '../../API/APICalls'
 import { uploadedTime } from '../../Utilities/dateFormat';
+import { useNavigate } from 'react-router-dom';
 function HorizontalVideoBox() {
 
   const [videoData, setVideoData] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [videoDataPage, setVideoDataPage] = useState(0);
+  const navigate=useNavigate();
 
   const fetchAllVideo = async (page) => {
     try {
@@ -64,7 +66,7 @@ function HorizontalVideoBox() {
       <div className='mt-10 mx-5 text-white'>
         {
           videoData.map((video) => (
-            <div key={video?._id} className='cursor-pointer'>
+            <div key={video?._id} className='cursor-pointer' onClick={()=>navigate(`/video/${video._id}`)}>
               <div className='flex h-36 gap-4'>
                 <div className='h-28 rounded-xl'>
                   <img src={video?.thumbnail} alt="video thumbnail" className='w-52 h-full rounded-lg border' />
@@ -77,7 +79,7 @@ function HorizontalVideoBox() {
                   <span className='text-white text-opacity-25'>|</span>
                   <p className='text-white text-opacity-25 '>{uploadedTime(video.updatedAt)}</p>
                   </div>
-
+                    
                 </div>
               </div>
             </div>
