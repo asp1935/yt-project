@@ -102,14 +102,36 @@ const getrChannelStats = asyncHandler(async (req, res) => {
 
 
 const getChannelVideos = asyncHandler(async (req, res) => {
-    const channelId=req.user?._id;
-    
+    const {channelUsername}=req.params;
+    const channelId=await User.findOne({username:channelUsername});
+    if(!channelId){
+        return res
+            .status(404)
+            .json(new APIResponce(404,{msg:'Channel not Found'},'Channel not Found'))
+    }
     const channelVideos=await Video.aggregate([
         {
             $match:{
                 videoOwner:new mongoose.Types.ObjectId(channelId)
             }
         },
+        // {
+        //     $lookup:{
+        //         from:'users',
+        //         localField:'videoOwner',
+        //         foreignField:'_id',
+        //         as:'videoOwnerDetails',
+        //         pipeline:[
+        //             {
+        //                 $project:{
+        //                     username:1,
+        //                     fullName:1,
+        //                     avatar:1
+        //                 }
+        //             }
+        //         ]
+        //     }
+        // },
         {
             $lookup:{
                 from:'likes',
@@ -134,7 +156,10 @@ const getChannelVideos = asyncHandler(async (req, res) => {
                 },
                 comments:{
                     $size:'$comments'
-                }
+                },
+                // videoOwnerDetails:{
+                //     $first:'$videoOwnerDetails',
+                // }
         
             }
         },
@@ -144,10 +169,12 @@ const getChannelVideos = asyncHandler(async (req, res) => {
                 videoFile:1,
                 thumbnail:1,
                 duration:1,
+                updatedAt:1,
                 views:1,
                 isPublished:1,
                 likes:1,
-                comments:1
+                comments:1,
+                // videoOwnerDetails:1
             }
         }
         

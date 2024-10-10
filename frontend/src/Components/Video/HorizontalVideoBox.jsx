@@ -25,8 +25,6 @@ function HorizontalVideoBox() {
   useEffect(() => {
     const initialLoadVideo = async () => {
       const data = await fetchAllVideo(videoDataPage);
-      console.log(data);
-
       if (data) {
         setVideoData(data);
         setHasMore(data.hasNextPage);
@@ -66,14 +64,14 @@ function HorizontalVideoBox() {
       <div className='mt-10 mx-5 text-white'>
         {
           videoData.map((video) => (
-            <div key={video?._id} className='cursor-pointer' onClick={()=>navigate(`/video/${video._id}`)}>
+            <div key={video?._id} className='cursor-pointer' >
               <div className='flex h-36 gap-4'>
-                <div className='h-28 rounded-xl'>
+                <div className='h-28 rounded-xl'onClick={()=>navigate(`/video/${video._id}`)}>
                   <img src={video?.thumbnail} alt="video thumbnail" className='w-52 h-full rounded-lg border' />
                 </div>
                 <div className='flex flex-col'>
-                  <p className='text-xl font-semibold'>{video.title}</p>
-                  <p className='text-white text-opacity-25 text-sm cursor-pointer'>{video.videoOwnerDetails.username}</p>
+                  <p className='text-xl font-semibold' onClick={()=>navigate(`/video/${video._id}`)}>{video.title}</p>
+                  <p className='text-white text-opacity-25 text-sm cursor-pointer' onClick={()=>navigate(`/channel/${video.videoOwnerDetails.username}`)}>{video.videoOwnerDetails.username}</p>
                   <div className='flex gap-2 text-sm'>
                   <p className='text-white text-opacity-25 '>{(video.views===0)?'No Views':video.views}</p>
                   <span className='text-white text-opacity-25'>|</span>

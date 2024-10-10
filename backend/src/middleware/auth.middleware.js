@@ -12,7 +12,7 @@ export const verifyJWT=asyncHandler(async(req,_,next)=>{
      //Authorization is key in header
      //and value format is Bearer <token> so extract vthat token
      const token = req.cookies?.accessToken || req.header('Authorization')?.replace('Bearer ','');
-  
+    
      if(!token){
          throw new APIError(401,"Unauthorized Request")
      }

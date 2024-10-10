@@ -145,9 +145,9 @@ function Video() {
                                 <h1 className='text-2xl font-bold'>{videoData.title}</h1>
                                 <div className='mt-5 flex justify-between items-center'>
                                     <div className='flex gap-5'>
-                                        <img src={videoData?.videoOwner?.avatar} className='rounded-full w-14 h-14 ' alt='avatar img' />
+                                        <img src={videoData?.videoOwner?.avatar} className='rounded-full w-14 h-14 cursor-pointer ' alt='avatar img' onClick={()=>navigate(`/channel/${videoData.videoOwner.username}`)}/>
                                         <div className=''>
-                                            <p className='font-semibold text-lg'>{videoData?.videoOwner?.username}</p>
+                                            <p className='font-semibold text-lg cursor-pointer' onClick={()=>navigate(`/channel/${videoData.videoOwner.username}`)}>{videoData?.videoOwner?.username}</p>
                                             <p className='text-sm text-gray-400'>{isSubscribed.count} Subscribers</p>
                                         </div>
                                     </div>

@@ -8,6 +8,6 @@ const router=Router();
 router.use(verifyJWT);
 
 router.route('/channel-stats').get(getrChannelStats);
-router.route('/channel-videos').get(getChannelVideos);
+router.route('/channel-videos/:channelUsername').get(getChannelVideos);
 
 export default router;

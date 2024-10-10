@@ -26,7 +26,7 @@ router.route("/login").post(loginUser);
 
 //secured Routes
 
-router.route("/logout").post(verifyJWT, logoutUser);      // midddleware added  
+router.route("/logout").get(verifyJWT, logoutUser);      // midddleware added  
 router.route("/refresh-token").post(refreshAccessToken);
 router.route("/change-password").post(verifyJWT,changeCurrectPassword);
 router.route("/current-user").get(verifyJWT,getCurrectUser);

@@ -32,7 +32,7 @@ const genrateAccessAndRefreshToken = async (userId) => {
 };
 
 
-const registerUser = asyncHandler(async (req, res) => {
+const registerUser = asyncHandler(async (req, res) => {51
 
     /*1.get user details from frontend
      2.validate data- check empty
@@ -210,6 +210,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
 const logoutUser = asyncHandler(async (req, res) => {
     //req.user our object add from auth.middleware
+    
     await User.findByIdAndUpdate(
         req.user._id,
         {
@@ -233,7 +234,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     const options = {
         httpOnly: true,
         secure: true,
-        sameSite: 'Strict'  //Adding sameSite: 'Strict' to prevent CSRF attacks.
+        // sameSite: 'Strict'  //Adding sameSite: 'Strict' to prevent CSRF attacks.
     }
 
     return res

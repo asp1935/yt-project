@@ -57,14 +57,26 @@ export const login_user = async (email, username, password) => {
     }
 };
 
-export const getchannelProfile=async (username)=>{
+export const getchannelProfile = async (username) => {
     try {
-        const responce=await axios.get(`${url}/users/channel/${username.username}`,
+        const responce = await axios.get(`${url}/users/channel/${username.username}`,
             {
-                withCredentials:true
+                withCredentials: true
             }
-            
+
         );
+        return responce.data;
+    } catch (error) {
+        APIErrorHandler(error);
+    }
+}
+
+export const logout = async () => {
+    try {
+        const responce = await axios.get(`${url}/users/logout`,
+            {
+                withCredentials: true
+            });
         return responce.data;
     } catch (error) {
         APIErrorHandler(error);
@@ -77,8 +89,6 @@ export const getchannelProfile=async (username)=>{
 
 export const getAllVideos = async (page = 1, limit = 10, query = '', sortBy = 'createdAt', sortType = 'desc') => {
     try {
-        console.log(page);
-        
         const responce = await axios.get(`${url}/video/get-videos`, {
             params: { page, limit, query, sortBy, sortType },
             withCredentials: true
@@ -193,10 +203,10 @@ export const update_comment = async (cmtId, content) => {
     }
 }
 
-export const delete_comment=async(cmtId)=>{
+export const delete_comment = async (cmtId) => {
     try {
-        const responce=await axios.delete(`${url}/comment/delete-comment/${cmtId}`,{
-            withCredentials:true
+        const responce = await axios.delete(`${url}/comment/delete-comment/${cmtId}`, {
+            withCredentials: true
         })
         return responce.data;
     } catch (error) {
@@ -205,3 +215,15 @@ export const delete_comment=async(cmtId)=>{
 }
 
 
+///////////////////////Dashboard\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+export const getChannelVideos = async (channelUsername) => {
+    try {
+        const responce = await axios.get(`${url}/dashboard/channel-videos/${channelUsername}`, {
+            withCredentials: true
+        })
+        return responce.data;
+    } catch (error) {
+        APIErrorHandler(error);
+    }
+}

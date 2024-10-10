@@ -6,13 +6,14 @@ import {useMutation} from '@tanstack/react-query'
 import { login_user } from '../API/APICalls';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { setUserData } from '../Redux/Slice/UserSlice';
 function Login() {
 
 
 
   const navigate=useNavigate();
   const location=useLocation();
-
+  const dispatch=useDispatch();
   const from=location.state?.from?.pathname || '/';
 
 
@@ -31,8 +32,7 @@ function Login() {
   const {mutate,isError,isSuccess,data}=useMutation({
       mutationFn:(data)=>login_user(data.email,data.username,data.password),
       onSuccess:(data)=>{
-        console.log(data);
-        
+        dispatch(setUserData(data.data.user));
         navigate(from,{replace:true});
       },
       onError:(error)=>{
