@@ -9,9 +9,9 @@ function VideoBox({ video }) {
 
 
     return (
-        <div className='p-2 cursor-pointer ' >
+        <div className='p-2 lg:p-5 cursor-pointer ' >
             <div className='relative' onClick={() => navigate(`/video/${video._id}`)}>
-                <img src={video.thumbnail} className='w-full h-60 rounded-lg' title={video.title} />
+                <img src={video.thumbnail} className='w-full h-48 lg:h-60 rounded-lg' title={video.title} />
                 <div className='absolute bg-black text-white bottom-3 right-2 rounded-md text-sm px-1'>
                     <p>{video.duration.toFixed(2)}</p>
                 </div>

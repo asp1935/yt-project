@@ -7,6 +7,7 @@ import { clearComments, setCommentCnt } from '../../Redux/Slice/CommentSlice';
 import UserComments from './UserComment';
 import { delete_comment, getVideoComments as fetchVideoComment } from '../../API/APICalls';
 import { user } from '../../Redux/Slice/UserSlice';
+import { setIsSidebar } from '../../Redux/Slice/SidebarSlice';
 
 function Comments() {
 
@@ -64,6 +65,7 @@ function Comments() {
         setVideoComments(data.docs);
         setHasMore(data.hasNextPage);
         dispatch(setCommentCnt(data.totalDocs));
+        
       }
     };
     initialLoadComments();
@@ -124,9 +126,10 @@ function Comments() {
     }
   }
 
+
   return (
     <>
-      <div className='relative'>
+      <div className='relative h-80 lg:h-auto overflow-auto'>
         <InfiniteScroll
           dataLength={videoComments.length}
           next={fetchMoreComments}

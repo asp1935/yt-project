@@ -40,11 +40,11 @@ function Dashboard() {
   }
 
   return (
-    <div className='p-16 bg-[#1e1e1e] ' ref={homeRef}>
+    <div className='p-5 lg:p-16 bg-[#1e1e1e] ' ref={homeRef}>
 
       <TopSections />
 
-      <div className='flex text-white gap-14 p-4 justify-center'>
+      <div className='flex text-white gap-14 lg:p-4 justify-center'>
         <p onClick={() => handleScrollTo(homeRef)} className='text-lg cursor-pointer hover:border-b-2'>Home</p>
         <p onClick={() => handleScrollTo(videoRef)} className='text-lg cursor-pointer hover:border-b-2'>Videos</p>
         <p onClick={() => handleScrollTo(tweetRef)} className='text-lg cursor-pointer hover:border-b-2'>Tweets</p>

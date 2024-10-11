@@ -134,34 +134,34 @@ function Video() {
     }
 
     return (
-        <div className=' max-h-full bg-[#1e1e1e] flex justify-center'>
-            <div className='container flex flex-col sm:flex-row '>
-                <div className='w-[100%] sm:w-[70%]'>
+        <div className='  bg-[#1e1e1e] flex justify-center'>
+            <div className='container flex flex-col lg:flex-row '>
+                <div className='w-[100%] lg:w-[70%]'>
                     {videoData ? (
-                        <div className='mt-10'>
-                            <video ref={videoRef} src={videoData.videoFile} type='video/mp4' className='w-full h-[30rem] rounded-xl' controls />
+                        <div className='mt-10 mx-5 md:ml-5 '>
+                            <video ref={videoRef} src={videoData.videoFile} type='video/mp4' className='w-full h-60 sm:h-80 md:h-96 lg:h-[30rem] rounded-xl' controls />
                             {/* <button onClick={togglePlay}>Play</button> */}
                             <div className='text-white mt-5 '>
-                                <h1 className='text-2xl font-bold'>{videoData.title}</h1>
+                                <h1 className='sm:text-2xl font-bold'>{videoData.title}</h1>
                                 <div className='mt-5 flex justify-between items-center'>
-                                    <div className='flex gap-5'>
-                                        <img src={videoData?.videoOwner?.avatar} className='rounded-full w-14 h-14 cursor-pointer ' alt='avatar img' onClick={()=>navigate(`/channel/${videoData.videoOwner.username}`)}/>
+                                    <div className='flex items-center gap-3 md:gap-5'>
+                                        <img src={videoData?.videoOwner?.avatar} className='rounded-full w-10 sm:w-14 h-10 sm:h-14 cursor-pointer ' alt='avatar img' onClick={()=>navigate(`/channel/${videoData.videoOwner.username}`)}/>
                                         <div className=''>
-                                            <p className='font-semibold text-lg cursor-pointer' onClick={()=>navigate(`/channel/${videoData.videoOwner.username}`)}>{videoData?.videoOwner?.username}</p>
+                                            <p className='font-semibold  sm:text-lg cursor-pointer' onClick={()=>navigate(`/channel/${videoData.videoOwner.username}`)}>{videoData?.videoOwner?.username}</p>
                                             <p className='text-sm text-gray-400'>{isSubscribed.count} Subscribers</p>
                                         </div>
                                     </div>
-                                    <div className='flex gap-5 items-center'>
+                                    <div className='flex gap-3 sm:gap-5 items-center'>
                                         <div>
-                                            <button onClick={() => handleLikeClick(videoData?._id)} className='outline-none border border-orange-600 px-5 rounded-full  hover:bg-orange-600 hover:bg-opacity-50'><i className={`fa-${isLiked.liked ? 'solid' : 'regular'} fa-thumbs-up text-2xl`}></i><span className='text-2xl ml-2'>{isLiked.count}</span></button>
+                                            <button onClick={() => handleLikeClick(videoData?._id)} className='outline-none border border-orange-600 px-3 md:px-5 rounded-full  hover:bg-orange-600 hover:bg-opacity-50'><i className={`fa-${isLiked.liked ? 'solid' : 'regular'} fa-thumbs-up sm:text-xl md:text-2xl`}></i><span className=' sm:text-xl md:text-2xl ml-2'>{isLiked.count}</span></button>
 
                                         </div>
-                                        <button onClick={() => handleSubscribeClick(videoData.videoOwner._id)} className={`rounded-full border border-orange-600  py-1 text-xl font-normal ${(isSubscribed.subscribed) ? 'bg-white bg-opacity-10 px-2' : 'px-4'} `}>{(isSubscribed.subscribed) ? ('Subscribed') : ('Subscribe')}</button>
+                                        <button onClick={() => handleSubscribeClick(videoData.videoOwner._id)} className={`rounded-full border border-orange-600 py-0 md:py-1  md:text-xl font-normal ${(isSubscribed.subscribed) ? 'bg-white bg-opacity-10 px-2' : 'px-4'} `}>{(isSubscribed.subscribed) ? ('Subscribed') : ('Subscribe')}</button>
                                     </div>
                                 </div>
-                                <div className='bg-white bg-opacity-5 rounded-xl text-wrap p-5 my-5 '>
+                                <div className='bg-white bg-opacity-5 rounded-xl text-wrap p-3 md:p-5 my-5 text-sm md:text-base '>
                                     <ReadMore>
-                                        <p className='font-semibold my-2'><span className='mr-2'>{videoData?.views === 0 ? 'No Views' : videoData?.views}</span> <span>{getFormatedDate(videoData?.updatedAt)}</span></p>
+                                        <p className='font-semibold  my-2'><span className='mr-2'>{videoData?.views === 0 ? 'No Views' : videoData?.views}</span> <span>{getFormatedDate(videoData?.updatedAt)}</span></p>
                                         <p className='mb-2'>{videoData?.description}</p>
                                         <div className='flex gap-5 my-5'>
                                             <img src={videoData?.videoOwner?.avatar} className='rounded-full w-14 h-14 ' alt='avatar img' />
@@ -183,7 +183,7 @@ function Video() {
                         <div>No video data available</div>
                     )}
                 </div>
-                <div className='w-full sm:w-[30%]'>
+                <div className='w-full lg:w-[30%]'>
                     <HorizontalVideoBox/>
                 </div>
             </div>

@@ -89,7 +89,7 @@ function CommentBox({ cmtId, cmtContent ,updateCommentList}) {
 
   return (
     <>
-      <div className="my-5">
+      <div className="my-5 ">
         <div className="flex gap-5">
           <img
             src={currentUser?.avatar}

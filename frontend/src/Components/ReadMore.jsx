@@ -10,7 +10,7 @@ function ReadMore({ children }) {
     return (
 
         <div>
-            <div className={`transition-all ease-in-out duration-500 cursor-pointer break-words ${readMore ? 'max-h-full' : 'max-h-[5rem] overflow-hidden'}`}
+            <div className={`transition-all ease-in-out duration-500 cursor-pointer break-words ${readMore ? 'max-h-full' : 'max-h-[4.5rem] overflow-hidden'}`}
                 onClick={toggleReadMore}>
                 {children}
             </div>

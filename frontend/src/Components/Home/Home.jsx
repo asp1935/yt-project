@@ -1,14 +1,13 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
-import Sidebar from './Sidebar';
 import DisplayVideoHome from '../Video/DisplayVideoHome';
 import { getAllVideos } from '../../API/APICalls';
 import { useQuery } from '@tanstack/react-query';
-import { useSelector } from 'react-redux';
 
 
 function Home() {
-  const isSidebar = useSelector(state => state.sidebarReducer.isSidebar);
+
+
 
   const { data, isLoading, isError, isSuccess, error } = useQuery({
     queryKey: ['getAllVideos'],
@@ -44,14 +43,7 @@ function Home() {
 
 
   return (
-    <div className='bg-gray-700 w-full h-[calc(100dvh-4.5rem)] flex'>
-
-      {(isSidebar) && (
-        <div className='bg-black w-1/6 h-[calc(100vh-4.5rem)]'>
-          <Sidebar />
-        </div>
-      )}
-
+    <div className='bg-gray-700 w-full min-h-full flex'>
       <div className='grow'>
         <DisplayVideoHome data={data.docs} isError={isError} isLoading={isLoading} isSuccess={isSuccess} error={error} />
       </div>
