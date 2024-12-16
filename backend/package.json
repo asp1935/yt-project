@@ -15,7 +15,8 @@
     "author": "akash pawar",
     "license": "ISC",
     "devDependencies": {
-        "nodemon": "^3.1.9"
+        "nodemon": "^3.1.9",
+        "uglify-js": "^2.8.29"
     },
     "dependencies": {
         "bcrypt": "^5.1.1",
