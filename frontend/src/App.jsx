@@ -33,7 +33,7 @@ function App() {
 
   return (
     <>
-      <div className='w-[100dvw]  h-[100dvh]'>
+      <div className='w-[100dvw]  min-h-dvh'>
         <Router>
           <Navbar />
           <div className="flex flex-col sm:flex-row w-full h-[calc(100vh-4.5rem)]">

@@ -18,6 +18,7 @@ router.route('/publish-video').post(upload.fields(
             maxCount: 1
         }
     ]),
+    verifyJWT,
      publishVideo);
 router.route('/get-videos').get(getAllVideos);
 router.use(verifyJWT);

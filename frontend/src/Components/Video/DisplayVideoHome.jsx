@@ -4,6 +4,8 @@ import React from 'react'
 
 import VideoBox from './VideoBox';
 function DisplayVideoHome({data,isLoading,isError,isSuccess,error}) {
+    console.log(data);
+    
     return (
         <div>
             {isLoading && <div>Loading...</div>}

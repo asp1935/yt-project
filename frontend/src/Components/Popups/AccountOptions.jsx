@@ -12,12 +12,11 @@ function AccountOptions({ userData, setIsAccount }) {
 
     const handleAccountOptionClick = (id) => {
         setIsAccount(false);
-        if (id === 'channel') {
-            navigate(`/channel/${userData.username}`);
+        const route = {
+            channel: `/channel/${userData.username}`,
+            dashboard: '/dashboard'
         }
-        else {
-            navigate('/dashboard');
-        }
+        navigate(route[id]|| route.dashboard)
     }
 
     const handleLogoutClick = async () => {
@@ -60,6 +59,10 @@ function AccountOptions({ userData, setIsAccount }) {
                             <i className="fa-solid fa-chalkboard-user text-lg"></i>
                             <p>Channel Dashboard</p>
                         </div>
+                        {/* <div className='flex gap-3 items-center px-2 py-3 cursor-pointer rounded-md hover:bg-zinc-800' onClick={() => handleAccountOptionClick('history')}>
+                            <i className="fa-solid fa-clock-rotate-left"></i>
+                            <p>Watch History</p>
+                        </div> */}
                     </div>
                     <hr className='mt-4 border-orange-600' />
                     <div className='mt-4 flex'>
@@ -74,6 +77,6 @@ function AccountOptions({ userData, setIsAccount }) {
 }
 AccountOptions.propTypes = {
     userData: PropTypes.object,
-    setIsAccount:PropTypes.func,
+    setIsAccount: PropTypes.func,
 }
 export default AccountOptions

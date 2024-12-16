@@ -6,7 +6,7 @@ import { APIResponce } from "../utils/APIResponce.js";
 import mongoose, { isValidObjectId } from "mongoose";
 import deletefromCloudinary from "../utils/DeleteFileCloudinary.js";
 import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
-
+import { User } from "../models/user.model.js"
 
 const getAllVideos = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, query, sortBy = 'createdAt', sortType = 'desc', userId } = req.query;
@@ -113,6 +113,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
 
 const getVideoById = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
+    const userId = req.user?._id;
 
     if (!isValidObjectId(videoId)) {
         throw new APIError(400, 'Invalid video ID!!!');
@@ -219,6 +220,15 @@ const getVideoById = asyncHandler(async (req, res) => {
     if (!singleVideo || singleVideo.length === 0) {
         throw new APIError(500, 'Something Went wrong while fetching video!!!');
     }
+    await User.findByIdAndUpdate(
+        userId,
+        {
+            $addToSet: {
+                watchHistory: videoId,
+            }
+        }, { new: true }
+    )
+
     return res
         .status(200)
         .json(new APIResponce(200, singleVideo, 'Successfully Fetched Video...'))
@@ -227,6 +237,9 @@ const getVideoById = asyncHandler(async (req, res) => {
 
 const publishVideo = asyncHandler(async (req, res) => {
     const { title, description } = req.body;
+    const userId = req.user?._id;
+    console.log(userId);
+
 
     if (!(title && description)) {
         throw new APIError(400, 'Title & Description Required!!!');

@@ -71,6 +71,21 @@ export const getchannelProfile = async (username) => {
     }
 }
 
+
+export const getWatchedHistory = async () => {
+    try {
+        console.log('aalire api madhe');
+        
+        const responce = await axios.get(`${url}/users/history`,
+            { withCredentials: true }
+        )
+        return responce.data;
+    } catch (error) {
+        APIErrorHandler(error);
+    }
+}
+
+
 export const logout = async () => {
     try {
         const responce = await axios.get(`${url}/users/logout`,

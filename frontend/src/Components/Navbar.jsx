@@ -42,7 +42,6 @@ function Navbar() {
         </div>
       </div>
       {isAccount &&
-
         (
           <AccountOptions userData={userData} setIsAccount={setIsAccount}/>
         )}

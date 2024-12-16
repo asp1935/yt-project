@@ -537,7 +537,8 @@ const getWatchHistory = asyncHandler(async (req, res) => {
                                 $first: "$videoOwner"
                             }
                         }
-                    }
+                    },
+                    
                 ]
             }
         }
